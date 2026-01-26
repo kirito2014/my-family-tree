@@ -53,7 +53,7 @@ const ConfirmModal = ({
           </button>
           <button
             onClick={onConfirm}
-            className="px-6 py-2.5 rounded-2xl bg-green-600 text-white font-medium hover:bg-green-700 transition-colors"
+            className="px-6 py-2.5 rounded-2xl bg-white text-green-600 font-medium hover:bg-green-50 transition-colors border border-green-600"
           >
             {confirmText}
           </button>
