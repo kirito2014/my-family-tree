@@ -71,8 +71,8 @@ export default function FamilyOnboarding() {
       {/* Header */}
       <header className="w-full px-6 py-6 flex justify-between items-center relative z-10">
         <div className="flex items-center gap-2 text-[#141811] font-bold text-xl select-none">
-          <div className="p-2 bg-[#80ec13] rounded-lg shadow-sm">
-            <TreeDeciduous size={24} className="text-[#192210]" />
+          <div className="p-2 bg-transparent rounded-lg shadow-md">
+            <img src="/favicon.ico" alt="FamilyTree Logo" className="h-6 w-6" />
           </div>
           <span>FamilyTree</span>
         </div>
@@ -81,10 +81,14 @@ export default function FamilyOnboarding() {
         <div className="flex justify-end min-w-[100px]">
           {view === 'initial' && (
             <button 
-              onClick={() => router.push('/auth')}
-              className="px-5 py-2.5 rounded-xl bg-white text-[#141811] font-bold shadow-sm hover:shadow-md transition-all active:scale-95 border border-gray-100"
+              onClick={() => router.push('/settings')}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-[#141811] font-bold shadow-sm hover:shadow-md transition-all active:scale-95 border border-gray-100"
             >
-              登录
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              设置
             </button>
           )}
 
@@ -108,44 +112,52 @@ export default function FamilyOnboarding() {
         
         {/* 初始选择界面 */}
         {view === 'initial' && (
-          <div className="w-full max-w-4xl grid md:grid-cols-2 gap-6 animate-in fade-in zoom-in duration-500">
-            {/* 加入家族卡片 */}
-            <button 
-              onClick={() => setView('join')}
-              className="group relative flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 text-center h-[400px] overflow-hidden border border-transparent hover:border-[#80ec13]/30"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#80ec13]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-24 h-24 bg-[#f7f8f6] rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Users size={40} className="text-[#5c6f4b] group-hover:text-[#80ec13] transition-colors" />
-              </div>
-              <h2 className="text-2xl font-bold text-[#141811] mb-3">加入现有家族</h2>
-              <p className="text-[#5c6f4b] px-8 mb-8">
-                使用邀请码加入您家人的空间，立即查看完整的家族树。
-              </p>
-              <div className="flex items-center gap-2 text-[#80ec13] font-bold group-hover:gap-4 transition-all">
-                <span>开始加入</span>
-                <ArrowRight size={20} />
-              </div>
-            </button>
+          <div className="w-full max-w-4xl animate-in fade-in zoom-in duration-500">
+            {/* 欢迎文本 */}
+            <div className="text-center mb-12">
+              <h1 className="text-4xl font-bold text-[#141811] mb-4">欢迎来到您的家族树</h1>
+              <p className="text-[#5c6f4b] text-lg">您今天想如何开始？请选择以下选项开启您的旅程。</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* 加入家族卡片 */}
+              <button 
+                onClick={() => setView('join')}
+                className="group relative flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 text-center overflow-hidden border border-transparent hover:border-[#80ec13]/30 aspect-[1.2/1]"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#80ec13]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="w-24 h-24 bg-[#f7f8f6] rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Users size={40} className="text-[#5c6f4b] group-hover:text-[#80ec13] transition-colors" />
+                </div>
+                <h2 className="text-2xl font-bold text-[#141811] mb-3">加入现有家族</h2>
+                <p className="text-[#5c6f4b] px-8 mb-8">
+                  使用邀请码加入您家人的空间，立即查看完整的家族树。
+                </p>
+                <div className="flex items-center gap-2 text-[#80ec13] font-bold group-hover:gap-4 transition-all">
+                  <span>加入家族</span>
+                  <ArrowRight size={20} />
+                </div>
+              </button>
 
-            {/* 创建家族卡片 */}
-            <Link 
-              href="/family/create"
-              className="group relative flex flex-col items-center justify-center p-8 bg-[#141811] rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 text-center h-[400px] overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#80ec13]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 backdrop-blur-sm">
-                <UserPlus size={40} className="text-[#80ec13]" />
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-3">创建新家族</h2>
-              <p className="text-gray-400 px-8 mb-8">
-                从零开始建立您的数字家谱，邀请亲人共同协作。
-              </p>
-              <div className="flex items-center gap-2 text-[#80ec13] font-bold group-hover:gap-4 transition-all">
-                <span>创建家族</span>
-                <ArrowRight size={20} />
-              </div>
-            </Link>
+              {/* 创建家族卡片 */}
+              <Link 
+                href="/family/create"
+                className="group relative flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 text-center overflow-hidden aspect-[1.2/1]"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#80ec13]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 backdrop-blur-sm">
+                  <UserPlus size={40} className="text-[#80ec13]" />
+                </div>
+                <h2 className="text-2xl font-bold text-[#141811] mb-3">创建新家族</h2>
+                <p className="text-[#5c6f4b] px-8 mb-8">
+                  从零开始建立您的数字家谱，邀请亲人共同协作。
+                </p>
+                <div className="flex items-center gap-2 text-[#80ec13] font-bold group-hover:gap-4 transition-all">
+                  <span>创建家族</span>
+                  <ArrowRight size={20} />
+                </div>
+              </Link>
+            </div>
           </div>
         )}
 
