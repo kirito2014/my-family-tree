@@ -82,6 +82,139 @@ export async function register(input: RegisterInput) {
   return { success: true };
 }
 
+export async function createFamily(familyName: string) {
+  try {
+    const session = await verifySession();
+    if (!session.success) {
+      return { error: '未登录' };
+    }
+
+    // 检查家庭名称是否有效
+    if (!familyName.trim()) {
+      return { error: '家庭名称不能为空' };
+    }
+
+    // 创建家庭
+    const family = await prisma.family.create({
+      data: {
+        name: familyName.trim(),
+        creatorId: session.user.id,
+        shareCode: `FAM-${Math.random().toString(36).substring(2, 8).toUpperCase()}`, // 生成邀请码
+      },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            username: true,
+            name: true,
+          }
+        }
+      }
+    });
+
+    // 自动将创建者添加为家庭成员（通常是管理员角色）
+    const adminRole = await prisma.role.findFirst({
+      where: { name: 'admin' }
+    });
+
+    // 如果没有管理员角色，则查找或创建默认角色
+    let roleId = adminRole?.id;
+    if (!roleId) {
+      const defaultRole = await prisma.role.upsert({
+        where: { name: 'member' },
+        update: {},
+        create: {
+          name: 'member',
+          description: '普通成员'
+        }
+      });
+      roleId = defaultRole.id;
+    }
+
+    await prisma.familyUser.create({
+      data: {
+        userId: session.user.id,
+        familyId: family.id,
+        roleId: roleId
+      }
+    });
+
+    return { success: true, family };
+  } catch (error) {
+    console.error('创建家庭失败:', error);
+    return { error: '创建家庭失败' };
+  }
+}
+
+export async function joinFamily(inviteCode: string) {
+  try {
+    const session = await verifySession();
+    if (!session.success) {
+      return { error: '未登录' };
+    }
+
+    // 检查邀请码是否有效
+    if (!inviteCode.trim()) {
+      return { error: '邀请码不能为空' };
+    }
+
+    // 根据邀请码查找家庭
+    const family = await prisma.family.findUnique({
+      where: { 
+        shareCode: inviteCode.trim().toUpperCase() 
+      }
+    });
+
+    if (!family) {
+      return { error: '无效的邀请码' };
+    }
+
+    // 检查用户是否已经是该家庭的成员
+    const existingMembership = await prisma.familyUser.findFirst({
+      where: {
+        userId: session.user.id,
+        familyId: family.id
+      }
+    });
+
+    if (existingMembership) {
+      return { error: '您已经是该家庭的成员' };
+    }
+
+    // 获取默认角色（通常为普通成员）
+    const memberRole = await prisma.role.findFirst({
+      where: { name: 'member' }
+    });
+
+    let roleId = memberRole?.id;
+    if (!roleId) {
+      const defaultRole = await prisma.role.upsert({
+        where: { name: 'member' },
+        update: {},
+        create: {
+          name: 'member',
+          description: '普通成员'
+        }
+      });
+      roleId = defaultRole.id;
+    }
+
+    // 创建家庭成员关系
+    await prisma.familyUser.create({
+      data: {
+        userId: session.user.id,
+        familyId: family.id,
+        roleId: roleId
+      }
+    });
+
+    return { success: true, family: { id: family.id, name: family.name } };
+  } catch (error) {
+    console.error('加入家庭失败:', error);
+    return { error: '加入家庭失败' };
+  }
+}
+
 // 内存缓存，用于跟踪登录尝试
 const loginAttempts: Record<string, { count: number; lastAttempt: number; lockedUntil: number }> = {};
 

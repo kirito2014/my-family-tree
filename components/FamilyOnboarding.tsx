@@ -2,192 +2,201 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { TreeDeciduous, Users, ArrowRight, UserPlus, ArrowLeft, Loader2 } from 'lucide-react';
+import { joinFamily, createFamily } from '@/app/actions/auth';
+import Link from 'next/link';
 
-interface FamilyOnboardingProps {
-  // 可以添加任何需要的 props
-}
-
-export const FamilyOnboarding = ({}: FamilyOnboardingProps) => {
-  const [showJoinForm, setShowJoinForm] = useState(false);
+export default function FamilyOnboarding() {
+  const [view, setView] = useState<'initial' | 'join' | 'create'>('initial');
   const [joinCode, setJoinCode] = useState('');
+  const [familyName, setFamilyName] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleCreateFamily = () => {
-    // 这里应该导航到创建家族的页面
-    // 暂时跳转到主页，实际项目中应该跳转到创建家族的表单页面
-    router.push('/');
-  };
-
-  const handleJoinFamily = () => {
-    setShowJoinForm(true);
-    setError('');
-  };
-
-  const handleJoinSubmit = (e: React.FormEvent) => {
+  const handleJoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!joinCode.trim()) return;
+    
+    setLoading(true);
     setError('');
-
-    if (!joinCode.trim()) {
-      setError('请输入加入码');
-      return;
+    
+    try {
+      const result = await joinFamily(joinCode);
+      if (result.success) {
+        router.push('/');
+        router.refresh();
+      } else {
+        setError(result.error || '加入失败，请检查邀请码');
+      }
+    } catch (err) {
+      setError('发生系统错误，请重试');
+    } finally {
+      setLoading(false);
     }
-
-    // 这里应该调用 API 来加入家族
-    // 暂时跳转到主页，实际项目中应该验证加入码并加入家族
-    console.log('加入家族，代码:', joinCode);
-    router.push('/');
   };
 
-  const handleBack = () => {
-    setShowJoinForm(false);
-    setJoinCode('');
+  const handleCreateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!familyName.trim()) return;
+    
+    setLoading(true);
     setError('');
+    
+    try {
+      const result = await createFamily(familyName);
+      if (result.success) {
+        router.push('/');
+        router.refresh();
+      } else {
+        setError(result.error || '创建失败');
+      }
+    } catch (err) {
+      setError('发生系统错误，请重试');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-gradient-to-br from-green-50 to-emerald-100">
-      <div className="absolute inset-0 z-0 bg-pattern opacity-40 pointer-events-none" style={{ backgroundSize: '20px 20px', backgroundPosition: '0 0, 10px 10px' }}></div>
-      <div className="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-3xl pointer-events-none mix-blend-multiply dark:mix-blend-lighten"></div>
-      <div className="absolute -bottom-[20%] -left-[10%] w-[500px] h-[500px] bg-[#dcfce7] dark:bg-[#2d3b22] rounded-full blur-3xl pointer-events-none mix-blend-multiply dark:mix-blend-lighten"></div>
-      <div className="relative z-10 flex flex-1 flex-col">
-        <div className="w-full max-w-7xl mx-auto">
-          <header className="flex items-center justify-between px-10 py-6">
-            <div className="flex items-center gap-3">
-              <div className="size-8 flex items-center justify-center rounded-lg shadow-sm">
-                <img src="/favicon.ico" alt="FamilyTree Logo" className="h-5 w-5" />
-              </div>
-              <h2 className="text-forest-dark dark:text-white text-xl font-bold tracking-tight">FamilyTree</h2>
-            </div>
-            <div className="flex items-center gap-3">
-              {/* 进入设置按钮 */}
-              <button
-                onClick={() => router.push('/settings')}
-                className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                进入设置
-              </button>
-            </div>
-          </header>
-
-          <main className="flex flex-col items-center justify-center px-4 py-16">
-            <div className="w-full max-w-4xl">
-              {!showJoinForm ? (
-                <div className="text-center">
-                  <h1 className="text-4xl font-bold text-gray-900 mb-4">欢迎来到您的家族树</h1>
-                  <p className="text-gray-600 mb-12">您今天想如何开始？请选择以下选项开启您的旅程。</p>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* 创建新家族 */}
-                    <div className="bg-white rounded-xl shadow-sm p-8 hover:shadow-md transition-shadow transition-transform duration-300 hover:scale-105">
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                          </svg>
-                        </div>
-                        <h2 className="text-xl font-semibold text-gray-900">创建新家族</h2>
-                        <p className="text-gray-600 mb-6">从零开始建立您的家族树。您将成为新数字遗产的第一个分支。</p>
-                        <button
-                          onClick={handleCreateFamily}
-                          className="text-green-600 font-medium flex items-center gap-2 hover:text-green-700 transition-colors"
-                        >
-                          开始设置
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* 加入现有家族 */}
-                    <div className="bg-white rounded-xl shadow-sm p-8 hover:shadow-md transition-shadow transition-transform duration-300 hover:scale-105">
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
-                        </div>
-                        <h2 className="text-xl font-semibold text-gray-900">加入现有家族</h2>
-                        <p className="text-gray-600 mb-6">拥有邀请码？立即与亲戚联系并探索你们共同的历史。</p>
-                        <button
-                          onClick={handleJoinFamily}
-                          className="text-green-600 font-medium flex items-center gap-2 hover:text-green-700 transition-colors"
-                        >
-                          输入代码
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center">
-                  <div className="w-full max-w-md bg-white rounded-xl shadow-sm p-8">
-                    <div className="flex items-center gap-2 mb-6">
-                      <button
-                        onClick={handleBack}
-                        className="p-2 rounded-full hover:bg-gray-100"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                      </button>
-                      <h2 className="text-xl font-semibold text-gray-900">加入现有家族</h2>
-                    </div>
-
-                    {error && (
-                      <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
-                        {error}
-                      </div>
-                    )}
-
-                    <form onSubmit={handleJoinSubmit} className="space-y-4">
-                      <div>
-                        <label htmlFor="join-code" className="block text-sm font-medium text-gray-700 mb-1">
-                          邀请码
-                        </label>
-                        <input
-                          id="join-code"
-                          type="text"
-                          value={joinCode}
-                          onChange={(e) => setJoinCode(e.target.value)}
-                          placeholder="请输入邀请码"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                        />
-                      </div>
-
-                      <div className="pt-2">
-                        <button
-                          type="submit"
-                          className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
-                        >
-                          加入家族
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              )}
-            </div>
-          </main>
-
-          <footer className="py-8 px-4 text-center text-sm text-gray-500">
-            <div className="flex justify-center gap-4 mb-4">
-              <a href="#" className="hover:text-primary transition-colors">隐私政策</a>
-              <span>•</span>
-              <a href="#" className="hover:text-primary transition-colors">服务条款</a>
-            </div>
-            <p>© 2023 FamilyTree. 保留所有权利。</p>
-          </footer>
-        </div>
+    // 修改点 1: 添加 [scrollbar-gutter:stable] 防止滚动条导致的布局偏移
+    // 修改点 2: 保持 overflow-x-hidden 防止水平溢出
+    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#f7f8f6] [scrollbar-gutter:stable]">
+      {/* 背景装饰 - 保持 fixed 定位以免干扰布局 */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-20 -left-20 w-[600px] h-[600px] bg-[#80ec13]/10 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute top-40 -right-20 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[100px]" />
       </div>
+
+      {/* Header */}
+      <header className="w-full px-6 py-6 flex justify-between items-center relative z-10">
+        <div className="flex items-center gap-2 text-[#141811] font-bold text-xl select-none">
+          <div className="p-2 bg-[#80ec13] rounded-lg shadow-sm">
+            <TreeDeciduous size={24} className="text-[#192210]" />
+          </div>
+          <span>FamilyTree</span>
+        </div>
+        
+        {/* 右侧按钮区域 - 使用固定的最小宽度容器，防止按钮文字长度不同导致的微小位移 */}
+        <div className="flex justify-end min-w-[100px]">
+          {view === 'initial' && (
+            <button 
+              onClick={() => router.push('/auth')}
+              className="px-5 py-2.5 rounded-xl bg-white text-[#141811] font-bold shadow-sm hover:shadow-md transition-all active:scale-95 border border-gray-100"
+            >
+              登录
+            </button>
+          )}
+
+          {view !== 'initial' && (
+            <button 
+              onClick={() => {
+                setView('initial');
+                setError('');
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/80 hover:bg-white text-[#5c6f4b] hover:text-[#141811] font-medium transition-all active:scale-95 backdrop-blur-sm"
+            >
+              <ArrowLeft size={20} />
+              <span className="hidden sm:inline">返回</span>
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col items-center justify-center p-4 relative z-10 w-full max-w-5xl mx-auto">
+        
+        {/* 初始选择界面 */}
+        {view === 'initial' && (
+          <div className="w-full max-w-4xl grid md:grid-cols-2 gap-6 animate-in fade-in zoom-in duration-500">
+            {/* 加入家族卡片 */}
+            <button 
+              onClick={() => setView('join')}
+              className="group relative flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 text-center h-[400px] overflow-hidden border border-transparent hover:border-[#80ec13]/30"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#80ec13]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-24 h-24 bg-[#f7f8f6] rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Users size={40} className="text-[#5c6f4b] group-hover:text-[#80ec13] transition-colors" />
+              </div>
+              <h2 className="text-2xl font-bold text-[#141811] mb-3">加入现有家族</h2>
+              <p className="text-[#5c6f4b] px-8 mb-8">
+                使用邀请码加入您家人的空间，立即查看完整的家族树。
+              </p>
+              <div className="flex items-center gap-2 text-[#80ec13] font-bold group-hover:gap-4 transition-all">
+                <span>开始加入</span>
+                <ArrowRight size={20} />
+              </div>
+            </button>
+
+            {/* 创建家族卡片 */}
+            <Link 
+              href="/family/create"
+              className="group relative flex flex-col items-center justify-center p-8 bg-[#141811] rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 text-center h-[400px] overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#80ec13]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 backdrop-blur-sm">
+                <UserPlus size={40} className="text-[#80ec13]" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-3">创建新家族</h2>
+              <p className="text-gray-400 px-8 mb-8">
+                从零开始建立您的数字家谱，邀请亲人共同协作。
+              </p>
+              <div className="flex items-center gap-2 text-[#80ec13] font-bold group-hover:gap-4 transition-all">
+                <span>创建家族</span>
+                <ArrowRight size={20} />
+              </div>
+            </Link>
+          </div>
+        )}
+
+        {/* 加入家族表单 */}
+        {view === 'join' && (
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-300">
+             <div className="p-8">
+                <div className="text-center mb-8">
+                  <div className="w-16 h-16 bg-[#f7f8f6] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Users size={32} className="text-[#80ec13]" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-[#141811]">加入家族</h2>
+                  <p className="text-[#5c6f4b] mt-2">请输入管理员分享给您的邀请码</p>
+                </div>
+
+                <form onSubmit={handleJoinSubmit} className="space-y-6">
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="输入邀请码 (例如: FAM-123456)"
+                      value={joinCode}
+                      onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                      className="w-full px-6 py-4 bg-[#f7f8f6] border-2 border-transparent focus:border-[#80ec13] rounded-2xl outline-none transition-all text-center text-lg font-bold tracking-wider placeholder:font-normal"
+                      autoFocus
+                    />
+                    {error && (
+                      <p className="text-red-500 text-sm text-center mt-2 animate-pulse">{error}</p>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading || !joinCode}
+                    className="w-full bg-[#80ec13] hover:bg-[#72d411] disabled:opacity-50 disabled:cursor-not-allowed text-[#192210] font-bold py-4 rounded-2xl shadow-lg shadow-green-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="animate-spin" /> 正在验证...
+                      </>
+                    ) : (
+                      <>
+                        确认加入 <ArrowRight size={20} />
+                      </>
+                    )}
+                  </button>
+                </form>
+             </div>
+          </div>
+        )}
+
+      </main>
     </div>
   );
-};
+}

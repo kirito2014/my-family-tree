@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { FamilyTreeCanvas } from '@/components/FamilyTreeCanvas';
 import { getCurrentUser } from '@/app/actions/auth';
-import { FamilyOnboarding } from '@/components/FamilyOnboarding';
+import FamilyOnboarding from '@/components/FamilyOnboarding';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
