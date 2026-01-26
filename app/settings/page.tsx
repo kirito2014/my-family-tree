@@ -165,12 +165,28 @@ const SettingsPage = () => {
             <img src="/favicon.ico" alt="FamilyTree Logo" className="h-8 w-8" />
             <h1 className="text-2xl font-bold text-gray-900">FamilyTree</h1>
           </div>
-          <div className="flex items-center gap-4">
+
+          <div className="flex items-center gap-3">
+            {/* 返回主页按钮 */}
             <button
-              className="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition-colors"
               onClick={() => router.push('/')}
+              className="w-9 h-9 rounded-full bg-white shadow-sm text-green-600 flex items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
+              title="返回主页"
             >
-              返回主页
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </button>
+            
+            {/* 退出登录按钮 */}
+            <button
+              onClick={handleLogout}
+              className="w-9 h-9 rounded-full bg-white shadow-sm text-red-600 flex items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
+              title="退出登录"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
             </button>
           </div>
         </div>
@@ -232,38 +248,10 @@ const SettingsPage = () => {
         <main className="flex-1 p-6 bg-gray-50">
           {activeTab === 'profile' && (
             <div className="space-y-8">
-              {/* 页面标题和操作按钮 */}
-              <div className="flex justify-between items-center">
-                {/* 页面标题 */}
-                <div className="flex flex-col gap-2">
-                  <h1 className="text-2xl md:text-3xl font-bold leading-tight tracking-[-0.033em]">个人设置</h1>
-                  <p className="text-sage-text text-sm font-normal leading-normal">更新您的个人信息以及您在家族树中的显示方式。</p>
-                </div>
-                
-                {/* 操作按钮 */}
-                <div className="flex items-center gap-3">
-                  {/* 新按钮1 */}
-                  <button
-                    onClick={() => router.push('/')}
-                    className="w-9 h-9 rounded-full bg-green-500/80 text-white flex items-center justify-center hover:bg-green-600/80 transition-colors"
-                    title="返回主页"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                  </button>
-                  
-                  {/* 新按钮2 */}
-                  <button
-                    onClick={handleLogout}
-                    className="w-9 h-9 rounded-full bg-red-500/80 text-white flex items-center justify-center hover:bg-red-600/80 transition-colors"
-                    title="退出登录"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                  </button>
-                </div>
+              {/* 页面标题 */}
+              <div className="flex flex-col gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold leading-tight tracking-[-0.033em]">个人设置</h1>
+                <p className="text-sage-text text-sm font-normal leading-normal">更新您的个人信息以及您在家族树中的显示方式。</p>
               </div>
 
               {/* 个人资料卡片 */}
