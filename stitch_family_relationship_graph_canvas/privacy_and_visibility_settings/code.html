@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>家族树显示与权限设置 - AncestryMap</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#80ec13",
+                        "primary-dark": "#6bc510",
+                        "background-light": "#f7f8f6",
+                        "background-dark": "#192210",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2a361f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #80ec13;
+            border: 4px solid #ffffff;
+            cursor: pointer;
+            margin-top: -10px;box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        input[type=range]::-moz-range-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #80ec13;
+            border: 4px solid #ffffff;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#141811] dark:text-white font-display overflow-x-hidden transition-colors duration-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root">
+<div class="layout-container flex w-full flex-col border-b border-[#e0e6db] dark:border-[#2a361f] bg-surface-light dark:bg-surface-dark transition-colors sticky top-0 z-50">
+<div class="flex flex-1 justify-center py-0">
+<div class="layout-content-container flex flex-col max-w-[1280px] flex-1">
+<header class="flex items-center justify-between whitespace-nowrap px-4 lg:px-10 py-4">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-[#141811] dark:text-white">
+<div class="size-8 text-primary">
+<svg class="w-full h-full" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">AncestryMap</h2>
+</div>
+<nav class="hidden lg:flex items-center gap-9">
+<a class="text-[#141811] dark:text-white/90 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">我的家族树</a>
+<a class="text-[#141811] dark:text-white/90 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">DNA 匹配</a>
+<a class="text-[#141811] dark:text-white/90 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">档案记录</a>
+<a class="text-[#141811] dark:text-white/90 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">设置</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<label class="hidden md:flex flex-col min-w-40 !h-10 max-w-64 group focus-within:ring-2 ring-primary rounded-xl transition-all">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full bg-[#f2f4f0] dark:bg-white/10">
+<div class="text-[#758961] dark:text-white/50 flex border-none items-center justify-center pl-4 rounded-l-xl border-r-0">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#141811] dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent focus:border-none h-full placeholder:text-[#758961] dark:placeholder:text-white/40 px-3 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal" placeholder="搜索亲属" value=""/>
+</div>
+</label>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-white dark:border-white/10 shadow-sm" data-alt="User profile photo showing a smiling person" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBX28ijI-Ir6Ho4k5HqaN2lW6Oh_vx_wKqFqAxpc2o7jvWfP5XiYodi9zEj9ol2uHDnIu6RMhG4OAU8KgUZE-uwMhR0lH-1IUuXkFY6AaMG3pMrzdrjC5I3Pd-a5ii_6K9lqe5SVxEhbrKn8zuuOJg6cSrqxaocrURR7Unpl6PeZy_HnmPBaLRcz3uI99mRxU1a-Ap_939RJhpoDQ01ldLmVsZdK3MBy04VQumpDJvDPHbgz6rHP2J9Dv1yIN7s9HXgv11F_Na1ODGf");'></div>
+</div>
+</header>
+</div>
+</div>
+</div>
+<main class="layout-container flex h-full grow flex-col">
+<div class="px-4 md:px-10 lg:px-10 flex flex-1 justify-center py-8">
+<div class="layout-content-container flex flex-col md:flex-row w-full max-w-[1280px] flex-1 gap-8">
+<aside class="w-full md:w-64 flex flex-col gap-2 shrink-0">
+<div class="flex flex-col gap-2 sticky top-24">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#141811] dark:text-white hover:bg-white/50 dark:hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#758961] group-hover:text-primary transition-colors">person</span>
+<span class="font-medium text-sm">个人设置</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#141811] dark:text-white hover:bg-white/50 dark:hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#758961] group-hover:text-primary transition-colors">diversity_3</span>
+<span class="font-medium text-sm">我的家族</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-[#141811] font-bold shadow-md shadow-primary/20 transition-colors" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-bold text-sm">家族树设置</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#141811] dark:text-white hover:bg-white/50 dark:hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#758961] group-hover:text-primary transition-colors">settings</span>
+<span class="font-medium text-sm">系统设置</span>
+</a>
+<div class="h-px bg-[#e0e6db] dark:bg-white/10 my-2 mx-4"></div>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-medium text-sm">退出登录</span>
+</a>
+</div>
+</aside>
+<div class="flex flex-col flex-1 gap-8 min-w-0">
+<div class="flex flex-wrap justify-between gap-4 p-2 items-end">
+<div class="flex min-w-72 flex-col gap-3">
+<h1 class="text-[#141811] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">家族树显示与权限设置</h1>
+<p class="text-[#5c6e4a] dark:text-[#a0b090] text-base font-normal leading-normal max-w-2xl">管理家族树的可视化层级、访问权限及特定分支筛选。</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center h-10 px-5 text-sm font-bold bg-white dark:bg-white/10 border border-[#e0e6db] dark:border-white/10 rounded-lg text-[#141811] dark:text-white hover:bg-gray-50 dark:hover:bg-white/20 transition-colors">
+                                取消
+                            </button>
+<button class="flex items-center justify-center h-10 px-5 text-sm font-bold bg-primary text-[#141811] rounded-lg hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20">
+                                保存更改
+                            </button>
+</div>
+</div>
+<section class="rounded-2xl bg-white/70 dark:bg-surface-dark/60 backdrop-blur-md border border-white/60 dark:border-white/5 shadow-sm overflow-hidden p-6 md:p-8">
+<div class="flex items-center gap-4 mb-6">
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark dark:text-primary">
+<span class="material-symbols-outlined">layers</span>
+</div>
+<div>
+<h2 class="text-xl font-bold text-[#141811] dark:text-white">显示深度</h2>
+<p class="text-sm text-[#5c6e4a] dark:text-white/60">控制默认加载的代数。</p>
+</div>
+</div>
+<div class="@container">
+<div class="relative flex w-full flex-col gap-6">
+<div class="flex w-full items-center justify-between">
+<p class="text-[#141811] dark:text-white text-lg font-bold leading-normal">层级 3: 曾祖父母</p>
+<div class="px-3 py-1 rounded-full bg-primary/20 text-xs font-bold text-primary-dark dark:text-primary uppercase tracking-wide">可见 62 个档案</div>
+</div>
+<div class="relative w-full h-12 flex items-center">
+<div class="absolute w-full h-2 bg-[#e0e6db] dark:bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[60%] rounded-full"></div>
+</div>
+<input class="absolute w-full h-2 bg-transparent appearance-none cursor-pointer z-10 focus:outline-none opacity-0 hover:opacity-100" max="5" min="1" type="range" value="3"/>
+<div class="absolute w-full flex justify-between px-1 pointer-events-none">
+<div class="size-4 rounded-full bg-primary border-2 border-white dark:border-[#2a361f]"></div>
+<div class="size-4 rounded-full bg-primary border-2 border-white dark:border-[#2a361f]"></div>
+<div class="size-4 rounded-full bg-primary border-2 border-white dark:border-[#2a361f] scale-125 shadow-lg"></div> 
+<div class="size-4 rounded-full bg-[#e0e6db] dark:bg-white/20"></div>
+<div class="size-4 rounded-full bg-[#e0e6db] dark:bg-white/20"></div>
+</div>
+</div>
+<div class="flex justify-between text-xs font-medium text-[#758961] dark:text-white/40">
+<span>直系亲属</span>
+<span>父母</span>
+<span class="text-[#141811] dark:text-primary font-bold">曾祖父母</span>
+<span>祖先</span>
+<span>所有支系</span>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<section class="rounded-2xl bg-white/70 dark:bg-surface-dark/60 backdrop-blur-md border border-white/60 dark:border-white/5 shadow-sm p-6 md:p-8 flex flex-col h-full">
+<div class="flex items-center gap-4 mb-6">
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark dark:text-primary">
+<span class="material-symbols-outlined">account_tree</span>
+</div>
+<div>
+<h2 class="text-xl font-bold text-[#141811] dark:text-white">分支筛选</h2>
+<p class="text-sm text-[#5c6e4a] dark:text-white/60">切换特定家族支系的可见性。</p>
+</div>
+</div>
+<div class="flex flex-col gap-6">
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="flex flex-col">
+<span class="text-base font-semibold text-[#141811] dark:text-white">父系</span>
+<span class="text-xs text-[#758961] dark:text-white/50">父亲的祖先和亲属</span>
+</div>
+<div class="relative inline-flex h-7 w-12 items-center rounded-full bg-primary transition-colors duration-200">
+<span class="translate-x-6 inline-block size-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</div>
+</div>
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="flex flex-col">
+<span class="text-base font-semibold text-[#141811] dark:text-white">母系</span>
+<span class="text-xs text-[#758961] dark:text-white/50">母亲的祖先和亲属</span>
+</div>
+<div class="relative inline-flex h-7 w-12 items-center rounded-full bg-primary transition-colors duration-200">
+<span class="translate-x-6 inline-block size-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</div>
+</div>
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="flex flex-col">
+<span class="text-base font-semibold text-[#141811] dark:text-white">姻亲与继亲</span>
+<span class="text-xs text-[#758961] dark:text-white/50">通过婚姻关联</span>
+</div>
+<div class="relative inline-flex h-7 w-12 items-center rounded-full bg-[#e0e6db] dark:bg-white/20 transition-colors duration-200">
+<span class="translate-x-1 inline-block size-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</div>
+</div>
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="flex flex-col">
+<span class="text-base font-semibold text-[#141811] dark:text-white">DNA 匹配</span>
+<span class="text-xs text-[#758961] dark:text-white/50">显示潜在的基因亲属</span>
+</div>
+<div class="relative inline-flex h-7 w-12 items-center rounded-full bg-[#e0e6db] dark:bg-white/20 transition-colors duration-200">
+<span class="translate-x-1 inline-block size-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</div>
+</div>
+</div>
+</section>
+<section class="rounded-2xl bg-white/70 dark:bg-surface-dark/60 backdrop-blur-md border border-white/60 dark:border-white/5 shadow-sm p-6 md:p-8 flex flex-col h-full">
+<div class="flex items-center gap-4 mb-6">
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark dark:text-primary">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<div>
+<h2 class="text-xl font-bold text-[#141811] dark:text-white">隐私等级</h2>
+<p class="text-sm text-[#5c6e4a] dark:text-white/60">谁可以查看您在世的亲属？</p>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<label class="flex items-start gap-3 p-3 rounded-xl border border-transparent hover:bg-white/50 dark:hover:bg-white/5 cursor-pointer transition-colors has-[:checked]:bg-primary/10 has-[:checked]:border-primary/30">
+<div class="relative flex items-center">
+<input class="size-5 border-gray-300 text-primary focus:ring-primary bg-white dark:bg-white/10 dark:border-white/20" name="privacy" type="radio"/>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#141811] dark:text-white">公开</span>
+<span class="text-xs text-[#758961] dark:text-white/50">对所有 AncestryMap 用户可见。</span>
+</div>
+</label>
+<label class="flex items-start gap-3 p-3 rounded-xl border border-primary/30 bg-primary/10 cursor-pointer transition-colors">
+<div class="relative flex items-center">
+<input checked="" class="size-5 border-gray-300 text-primary focus:ring-primary bg-white dark:bg-white/10 dark:border-white/20" name="privacy" type="radio"/>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#141811] dark:text-white">仅限家庭成员</span>
+<span class="text-xs text-[#758961] dark:text-white/50">仅受邀成员可查看详情。</span>
+</div>
+</label>
+<label class="flex items-start gap-3 p-3 rounded-xl border border-transparent hover:bg-white/50 dark:hover:bg-white/5 cursor-pointer transition-colors has-[:checked]:bg-primary/10 has-[:checked]:border-primary/30">
+<div class="relative flex items-center">
+<input class="size-5 border-gray-300 text-primary focus:ring-primary bg-white dark:bg-white/10 dark:border-white/20" name="privacy" type="radio"/>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#141811] dark:text-white">私密</span>
+<span class="text-xs text-[#758961] dark:text-white/50">仅您自己可见。</span>
+</div>
+</label>
+<div class="mt-4 pt-4 border-t border-[#e0e6db] dark:border-white/10">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="rounded border-gray-300 text-primary focus:ring-primary size-5 bg-white dark:bg-white/10 dark:border-white/20" type="checkbox"/>
+<span class="text-sm font-medium text-[#141811] dark:text-white group-hover:text-primary transition-colors">隐藏在世人员的出生年份</span>
+</label>
+</div>
+</div>
+</section>
+</div>
+<section class="rounded-2xl bg-gradient-to-r from-[#141811] to-[#2a361f] p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg">
+<div class="flex flex-col gap-2">
+<h3 class="text-xl font-bold">需要更多控制权？</h3>
+<p class="text-white/70 max-w-lg text-sm">我们的高级隐私盾提供对家族树中每个档案的精细控制，允许您创建自定义访问列表。</p>
+</div>
+<button class="whitespace-nowrap px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-bold text-sm transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+                            查看高级选项
+                        </button>
+</section>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

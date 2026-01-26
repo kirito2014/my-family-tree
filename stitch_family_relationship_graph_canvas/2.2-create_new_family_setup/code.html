@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>创建新家族配置</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#80ec13",
+                        "background-light": "#f7f8f6",
+                        "background-dark": "#192210",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-[#141811] dark:text-white transition-colors duration-300">
+<div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+<div class="absolute -top-20 -left-20 w-[500px] h-[500px] bg-primary/20 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-screen animate-pulse"></div>
+<div class="absolute -bottom-20 -right-20 w-[600px] h-[600px] bg-[#dbead5] dark:bg-primary/10 rounded-full blur-3xl opacity-60 mix-blend-multiply dark:mix-blend-screen"></div>
+<div class="absolute top-1/3 right-10 w-[300px] h-[300px] bg-primary/15 rounded-full blur-2xl opacity-40"></div>
+</div>
+<div class="relative flex min-h-screen w-full flex-col">
+<header class="flex items-center justify-between px-10 py-5 w-full">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-10 bg-primary/20 rounded-xl text-primary-dark">
+<span class="material-symbols-outlined text-green-800">spa</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-[#141811] dark:text-white">Ancestry Roots</h2>
+</div>
+<div class="flex items-center gap-6">
+<a class="text-sm font-medium text-[#141811]/70 dark:text-white/70 hover:text-[#141811] dark:hover:text-white" href="#">帮助</a>
+<button class="size-8 rounded-full overflow-hidden border border-white/20">
+<div class="w-full h-full bg-cover bg-center" data-alt="User avatar profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBTFKI6JdFUfpLIig3mE9eJu9qpxexo9EVKHuS4zIZQq9Dsct1YHqcp44AEL7CkRxR_Ob5W3-eRxLGZhGezbLtEAi_-9t8P47NdcQiktmri6ee1pPzYUyzeSwhgdktxtohflZjQ036ZliJD7YNXwJ6c4CdHjnjtu9Jdx6wUxfwrvNAONMclxf06NR_1zd2wRd8KEfJp4W5QickLAmtDF0NDImsA2jeS6FhGVM2Hi0eTTUR814S99vvK6G5VhgiNkNRHUE6bMTAPPZ50");'></div>
+</button>
+</div>
+</header>
+<main class="flex flex-1 items-center justify-center p-4">
+<div class="w-full max-w-[560px] backdrop-blur-md bg-white/60 dark:bg-black/40 border border-white/50 dark:border-white/10 rounded-2xl shadow-xl p-8 md:p-12 relative overflow-hidden">
+<div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+<div class="flex items-center gap-2 mb-8">
+<span class="text-xs font-bold uppercase tracking-wider text-primary-darker text-green-800 dark:text-primary">第 1 步 / 共 3 步</span>
+<div class="h-px bg-gray-200 dark:bg-white/10 flex-1"></div>
+</div>
+<div class="mb-8 text-center md:text-left">
+<h1 class="text-3xl md:text-4xl font-black tracking-tight mb-3 text-[#141811] dark:text-white">开启您的家族传承</h1>
+<p class="text-[#5c6f4b] dark:text-gray-300 text-lg leading-relaxed">
+                    让我们为您种下历史的根基。请输入基本信息以开启您的旅程。
+                </p>
+</div>
+<form class="flex flex-col gap-6">
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-[#141811] dark:text-white/90" for="family-name">
+                        家族名称
+                    </label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary-dark transition-colors">
+<span class="material-symbols-outlined">badge</span>
+</div>
+<input class="w-full bg-white/80 dark:bg-white/5 border border-[#e0e6db] dark:border-white/10 text-[#141811] dark:text-white rounded-xl py-3.5 pl-12 pr-4 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500 font-medium" id="family-name" placeholder="例如：王氏家族" type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-[#141811] dark:text-white/90" for="motto">
+                        家族家训 <span class="font-normal text-gray-400 ml-1">(选填)</span>
+</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary-dark transition-colors">
+<span class="material-symbols-outlined">format_quote</span>
+</div>
+<input class="w-full bg-white/80 dark:bg-white/5 border border-[#e0e6db] dark:border-white/10 text-[#141811] dark:text-white rounded-xl py-3.5 pl-12 pr-4 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500 font-medium" id="motto" placeholder="例如：家和万事兴" type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-[#141811] dark:text-white/90" for="region">
+                        发源地/地区
+                    </label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary-dark transition-colors">
+<span class="material-symbols-outlined">public</span>
+</div>
+<select class="w-full appearance-none bg-white/80 dark:bg-white/5 border border-[#e0e6db] dark:border-white/10 text-[#141811] dark:text-white rounded-xl py-3.5 pl-12 pr-10 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all font-medium cursor-pointer" id="region">
+<option class="text-gray-400" disabled="" selected="" value="">选择地区</option>
+<option value="nam">北美洲</option>
+<option value="sam">南美洲</option>
+<option value="eu">欧洲</option>
+<option value="as">亚洲</option>
+<option value="af">非洲</option>
+<option value="oc">大洋洲</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+<div class="pt-4 flex flex-col gap-4">
+<button class="w-full bg-primary hover:bg-[#72d411] active:scale-[0.98] transition-all text-[#192210] font-bold text-lg py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2" type="button">
+<span>完成创建</span>
+<span class="material-symbols-outlined text-xl">arrow_forward</span>
+</button>
+<a class="text-center text-sm font-medium text-[#5c6f4b] dark:text-gray-400 hover:text-[#141811] dark:hover:text-white transition-colors" href="#">
+                        取消并返回
+                    </a>
+</div>
+</form>
+</div>
+<div class="hidden xl:block absolute right-20 top-1/2 -translate-y-1/2 w-[300px] pointer-events-none opacity-80">
+<div class="relative w-full aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl rotate-3 border-4 border-white/50">
+<div class="w-full h-full bg-cover bg-center" data-alt="Abstract minimal tree roots illustration on cream paper" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCSmBlrVinMElR5d2X2pOGK3QZI1qWd-p4sBz8RFhMfc9fdnAauplA6uy9XePtXIyYsiRXJ6r01EX2jyoicaAN_8_B84nlHv-4eewHYIB0dpnlvBL0nJZIQmSbq5iqJtXDeSKFxhApTJhKEC7P4lvisyoowiaPcJdjpXVxENPirTcqUjYTuxg_jAW_E-q7JOXDOK6t8vCZJ1Oipa6sKLTZi8q7U5Ldm_hAAEjB0FEbl6KGqpOIhGmz0k7VlWe1fYu73of8E9PdHIoHJ");'></div>
+<div class="absolute inset-0 bg-primary/20 mix-blend-overlay"></div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

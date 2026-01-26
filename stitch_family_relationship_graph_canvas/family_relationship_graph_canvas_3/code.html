@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>家族关系图谱主看板</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#80ec13",
+                        "primary-dark": "#6bc50e",
+                        "background-light": "#FAFAF5", // Cream white
+                        "background-dark": "#192210",
+                        "card-glass": "rgba(255, 255, 255, 0.7)",
+                        "card-border": "rgba(255, 255, 255, 0.5)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                    backdropBlur: {
+                        xs: '2px',
+                    }
+                },
+            },
+        }
+    </script>
+<style>.bg-grid-pattern {
+            background-image: radial-gradient(#d4d4d8 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .dark .bg-grid-pattern {
+            background-image: radial-gradient(#3f3f46 1px, transparent 1px);
+        }.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #80ec13;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#141811] dark:text-white h-screen overflow-hidden flex flex-col">
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-white/60 dark:bg-black/60 backdrop-blur-md border-b border-white/20 dark:border-white/10 shadow-sm transition-all">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3 text-[#141811] dark:text-white">
+<div class="p-2 bg-primary/20 rounded-lg text-primary-dark dark:text-primary">
+<span class="material-symbols-outlined text-2xl">account_tree</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">家族传承树</h1>
+</div>
+<label class="hidden md:flex items-center relative group">
+<span class="material-symbols-outlined absolute left-3 text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+<input class="pl-10 pr-4 py-2 bg-white/50 dark:bg-black/30 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-64 transition-all" placeholder="搜索家族成员..." type="text"/>
+</label>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-[#141811] rounded-xl text-sm font-bold transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">download</span>
+<span class="hidden sm:inline">导出</span>
+</button>
+<button class="p-2 hover:bg-white/50 dark:hover:bg-white/10 rounded-xl text-gray-600 dark:text-gray-300 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-2 hover:bg-white/50 dark:hover:bg-white/10 rounded-xl text-gray-600 dark:text-gray-300 transition-colors">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+<div class="w-px h-8 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+<div class="h-10 w-10 rounded-full bg-cover bg-center border-2 border-white dark:border-gray-800 shadow-sm cursor-pointer" data-alt="显示微笑的人的用户个人资料图片" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCMro7B6_NB1pJ8f7Ls9fDCfz_mXD8WL7vMRJxz4qR34D2pqo1afX_TERg1_RdwjPh-SFfrHpk4pEp4Puc5X_5Q9Pf9xkWTCcDcPsEai2vBpRQCLGwSAobxdqJzr8t1bwxSN4Wf03Eb5hFckbDRjrV8zUcRoDROP9IIw2PXkc-r89jgS8yplAL0QfXxPxHhv7UVIOhT7lUc3NBfBLmXvDBubgkgHwd-TT3qs16omf4CONmIbd_Ly7YlgMkkvRdWFuhxY1NzdKNpvX7I');">
+</div>
+</div>
+</header>
+<main class="flex-1 relative overflow-hidden bg-background-light dark:bg-background-dark cursor-grab active:cursor-grabbing">
+<div class="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none"></div>
+<div class="absolute top-28 left-6 z-30 flex flex-col gap-5 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border border-white/40 dark:border-white/10 p-5 rounded-2xl shadow-xl transition-all w-64">
+<div class="flex items-center justify-between pb-2 border-b border-gray-200/50 dark:border-gray-700/50">
+<h3 class="text-xs font-bold uppercase tracking-widest text-gray-500">图谱工具</h3>
+<span class="material-symbols-outlined text-gray-400 text-sm cursor-pointer hover:text-primary">drag_indicator</span>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-medium text-gray-600 dark:text-gray-300 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">timeline</span> 线条样式
+        </label>
+<div class="grid grid-cols-3 gap-2">
+<button class="h-9 rounded-lg bg-primary/20 border border-primary text-primary-dark dark:text-primary flex items-center justify-center transition-colors" title="实线">
+<span class="material-symbols-outlined text-lg">horizontal_rule</span>
+</button>
+<button class="h-9 rounded-lg bg-white/40 dark:bg-black/20 hover:bg-primary/10 border border-transparent hover:border-primary/30 text-gray-500 flex items-center justify-center transition-colors" title="虚线">
+<span class="material-symbols-outlined text-lg">more_horiz</span>
+</button>
+<button class="h-9 rounded-lg bg-white/40 dark:bg-black/20 hover:bg-primary/10 border border-transparent hover:border-primary/30 text-gray-500 flex items-center justify-center transition-colors" title="点线">
+<span class="material-symbols-outlined text-lg">power_input</span>
+</button>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-medium text-gray-600 dark:text-gray-300 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">palette</span> 线条颜色
+        </label>
+<div class="flex justify-between gap-1">
+<button class="w-8 h-8 rounded-full bg-[#80ec13] ring-2 ring-offset-2 ring-offset-white dark:ring-offset-[#192210] ring-[#80ec13] shadow-sm transform scale-110"></button>
+<button class="w-8 h-8 rounded-full bg-blue-500 hover:ring-2 hover:ring-offset-2 hover:ring-blue-400 ring-offset-white dark:ring-offset-[#192210] transition-all"></button>
+<button class="w-8 h-8 rounded-full bg-purple-500 hover:ring-2 hover:ring-offset-2 hover:ring-purple-400 ring-offset-white dark:ring-offset-[#192210] transition-all"></button>
+<button class="w-8 h-8 rounded-full bg-orange-500 hover:ring-2 hover:ring-offset-2 hover:ring-orange-400 ring-offset-white dark:ring-offset-[#192210] transition-all"></button>
+<button class="w-8 h-8 rounded-full bg-gray-400 hover:ring-2 hover:ring-offset-2 hover:ring-gray-300 ring-offset-white dark:ring-offset-[#192210] transition-all"></button>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-medium text-gray-600 dark:text-gray-300 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">start</span> 端点形状
+        </label>
+<div class="grid grid-cols-5 gap-1">
+<button class="h-8 rounded hover:bg-primary/10 text-gray-500 hover:text-primary flex items-center justify-center transition-colors" title="箭头">
+<span class="material-symbols-outlined text-lg">arrow_right_alt</span>
+</button>
+<button class="h-8 rounded bg-primary/20 text-primary-dark dark:text-primary flex items-center justify-center transition-colors" title="菱形">
+<span class="material-symbols-outlined text-lg">diamond</span>
+</button>
+<button class="h-8 rounded hover:bg-primary/10 text-gray-500 hover:text-primary flex items-center justify-center transition-colors" title="圆形">
+<span class="material-symbols-outlined text-lg">circle</span>
+</button>
+<button class="h-8 rounded hover:bg-primary/10 text-gray-500 hover:text-primary flex items-center justify-center transition-colors" title="环形">
+<span class="material-symbols-outlined text-lg">radio_button_unchecked</span>
+</button>
+<button class="h-8 rounded hover:bg-primary/10 text-gray-500 hover:text-primary flex items-center justify-center transition-colors" title="方形">
+<span class="material-symbols-outlined text-lg">square</span>
+</button>
+</div>
+</div>
+<div class="pt-2 border-t border-gray-200/50 dark:border-gray-700/50">
+<button class="w-full group relative flex items-center justify-center gap-2 py-2.5 bg-white/40 dark:bg-black/20 hover:bg-primary/20 border border-white/50 dark:border-white/10 hover:border-primary/50 rounded-xl transition-all shadow-sm overflow-visible">
+<span class="material-symbols-outlined text-primary-dark dark:text-primary transition-transform group-hover:rotate-12 group-hover:scale-110">auto_fix_high</span>
+<span class="text-sm font-bold text-gray-600 dark:text-gray-300 group-hover:text-primary-dark dark:group-hover:text-primary">自动布局</span>
+<div class="absolute left-[105%] top-1/2 -translate-y-1/2 w-48 p-2.5 bg-gray-900/95 dark:bg-white/95 backdrop-blur text-white dark:text-gray-900 text-xs font-medium rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none shadow-xl z-50 translate-x-2 group-hover:translate-x-0">
+<div class="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3 h-3 bg-gray-900/95 dark:bg-white/95 rotate-45 transform"></div>
+            按代际重新组织成员以减少重叠
+        </div>
+</button>
+</div>
+</div>
+<div class="absolute inset-0 flex items-center justify-center transform scale-100 origin-center pb-32">
+<div class="relative z-10 w-[1000px] h-[800px] flex justify-center pt-20">
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible">
+<defs>
+<marker id="arrow" markerHeight="10" markerUnits="strokeWidth" markerWidth="10" orient="auto" refX="8" refY="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#80ec13"></path>
+</marker>
+<marker id="circle" markerHeight="8" markerWidth="8" orient="auto" refX="4" refY="4">
+<circle cx="4" cy="4" fill="#FAFAF5" r="3" stroke="#80ec13" stroke-width="1.5"></circle>
+</marker>
+<marker id="diamond" markerHeight="12" markerWidth="12" orient="auto" refX="6" refY="6">
+<path d="M6 1 L11 6 L6 11 L1 6 Z" fill="#FAFAF5" stroke="#80ec13" stroke-width="1.5"></path>
+</marker>
+<marker id="dot-gray" markerHeight="8" markerWidth="8" orient="auto" refX="4" refY="4">
+<circle cx="4" cy="4" fill="#e5e7eb" r="3"></circle>
+</marker>
+</defs>
+<path d="M 500 188 C 500 319, 300 319, 300 450" fill="none" marker-end="url(#diamond)" stroke="#80ec13" stroke-width="3"></path>
+<path class="dark:stroke-gray-600" d="M 500 188 C 500 319, 700 319, 700 450" fill="none" marker-end="url(#dot-gray)" stroke="#e5e7eb" stroke-dasharray="8 4" stroke-width="2"></path>
+<path d="M 300 546 C 300 648, 200 648, 200 750" fill="none" marker-end="url(#arrow)" stroke="#80ec13" stroke-width="3"></path>
+<path class="dark:stroke-gray-600" d="M 300 546 C 300 648, 400 648, 400 750" fill="none" marker-end="url(#dot-gray)" stroke="#e5e7eb" stroke-dasharray="8 4" stroke-width="2"></path>
+</svg>
+<div class="absolute top-[100px] left-1/2 -translate-x-1/2 transform transition-transform hover:scale-105 duration-300">
+<div class="w-64 bg-card-glass dark:bg-gray-800/60 backdrop-blur-md border border-white/50 dark:border-white/10 p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-primary/50 flex items-center gap-4 cursor-pointer group relative">
+<div class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="relative">
+<div class="w-14 h-14 rounded-full bg-cover bg-center border-2 border-white dark:border-gray-700 shadow-sm" data-alt="一位庄重老人的肖像" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDknGLNFGwxz2QfG520oO3f_0w5qfs_mY59cCeVnfz9zJgcR7DzSBvQvFQ61sOWwgXTL-0vR1b0V-Rt9kaYjZdWLRJpErZCf1TL6REOug1r3fkTUqkrhzwzW7iZCPOzmSbQn2D3i971LXXNOf6iQ3_caOBPRP1bE6JIK5pIxpdZ86DOSq0cP2J_jg4N_gUyCwWs-rCZPsJi7qiYyMY1ewaqYtr-25pyZjiwKQ_QW1OLyre4mKTYGydTKwAPoFSNgT3TqKMl5B2PWEax');">
+</div>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-white dark:border-gray-800" title="Direct Lineage"></div>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-[#141811] dark:text-white font-bold truncate group-hover:text-primary-dark dark:group-hover:text-primary transition-colors">亚瑟·罗宾逊</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">1940年 - 2020年</p>
+<p class="text-[10px] uppercase tracking-wider text-gray-400 mt-1">族长</p>
+</div>
+</div>
+</div>
+<div class="absolute top-[450px] left-[300px] -translate-x-1/2 transform transition-transform hover:scale-105 duration-300">
+<div class="w-64 bg-card-glass dark:bg-gray-800/60 backdrop-blur-md border border-white/50 dark:border-white/10 p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-primary/50 flex items-center gap-4 cursor-pointer group relative">
+<div class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="relative">
+<div class="w-14 h-14 rounded-full bg-cover bg-center border-2 border-white dark:border-gray-700 shadow-sm" data-alt="一位微笑的中年男子的肖像" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCCf-hn-t2_xvVUFXChbhycsba_hjfDqGHsOSnEaM--NFnr9BCn7ylYrmYDR-N4r144QyZoyDPtFWjsMk2BhyGejMPIJlSrGkEvsep1EJyyeRjVsBsTBt9HLc7RBgWZHjeT6iOzbh82pk4vutS4pRAMmBAv77ktNzc0CUMlakaJKFpMtVomTLCX3WApJw6abH_GrDkTfjzFTGU311G18URAcJW0LSzkXOK9HosHT5hLuVEod7muZYhLpbQ3-uDT1Xcm9Kb4ng1_dd_B');">
+</div>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-white dark:border-gray-800"></div>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-[#141811] dark:text-white font-bold truncate group-hover:text-primary-dark dark:group-hover:text-primary transition-colors">约翰·罗宾逊</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">出生：1970年1月12日</p>
+<span class="inline-block mt-2 px-2 py-0.5 bg-primary/20 text-primary-dark dark:text-primary text-[10px] font-bold rounded-full">父亲</span>
+</div>
+</div>
+</div>
+<div class="absolute top-[450px] left-[700px] -translate-x-1/2 transform transition-transform hover:scale-105 duration-300">
+<div class="w-64 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm border border-white/30 dark:border-white/5 p-4 rounded-xl shadow-sm hover:shadow-md hover:bg-white/60 dark:hover:bg-gray-800/60 flex items-center gap-4 cursor-pointer group opacity-90 relative">
+<div class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="w-14 h-14 rounded-full bg-cover bg-center border-2 border-white dark:border-gray-700 shadow-sm grayscale group-hover:grayscale-0 transition-all" data-alt="一位中年妇女的肖像" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCa-IQfmCCdL6w-kLIjV17OXkp5_hnj4Q-L1VNQOWQKL9-zONgQ1us8c4MRLxu-gyjDahD9RGVM6b3avVFHZ1XQQqahAvWctU1dVk7Hat07GqUzw-JfMD8CUXsgE45xdkdZ9H97hXUsMLMT7TIkSppqbaTq88XpbJLvGsrY7gt7aknDeWHFCsA_ElZMOfIzIdQclz7oDhT8c34kDtjvwfHXQdIA06SJFB42nj0Y03piq2QB6qMIf_ds7HeBJ0F5Vs08fJHxjzWUAdnz');">
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-[#141811] dark:text-white font-semibold truncate">玛丽·罗宾逊</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">出生：1972年3月4日</p>
+<p class="text-[10px] text-gray-400 mt-1">姑姑</p>
+</div>
+</div>
+</div>
+<div class="absolute top-[750px] left-[200px] -translate-x-1/2 transform transition-transform hover:scale-105 duration-300">
+<div class="w-64 bg-card-glass dark:bg-gray-800/60 backdrop-blur-md border border-white/50 dark:border-white/10 p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-primary/50 flex items-center gap-4 cursor-pointer group ring-2 ring-primary ring-offset-2 ring-offset-[#FAFAF5] dark:ring-offset-[#192210] relative">
+<div class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="relative">
+<div class="w-14 h-14 rounded-full bg-cover bg-center border-2 border-white dark:border-gray-700 shadow-sm" data-alt="一位年轻男子的肖像" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBQIgKKOw5Scd5srg2g8REcf8lWkauqH3CHL4ItvlW079WnC_C4YQzD573iE07ieA3fAZbE3_ohqztF5LL9Plw27UusMPQftxQmc3QUE6KkAwp4U1XHgJiQn_ye889Pu0PksmQfcvT2LdlQ7zF9spcNiXY2LuBXAg1Rn-7TUmqShFWghA4zon9PydNsB_1ecOSd898qUa2G8AhLh7cLbz2HEKFHJPhp9nVM6G2-hDX6mNwqyAgKyukLiNIC5Xr56nSb5MSYtePWzHQ');">
+</div>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-white dark:border-gray-800"></div>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-[#141811] dark:text-white font-bold truncate group-hover:text-primary-dark dark:group-hover:text-primary transition-colors">大卫·罗宾逊</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">出生：1998年6月21日</p>
+<div class="mt-1 flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="text-[10px] text-green-600 dark:text-green-400 font-medium">活跃</span>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute top-[750px] left-[400px] -translate-x-1/2 transform transition-transform hover:scale-105 duration-300">
+<div class="w-64 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm border border-white/30 dark:border-white/5 p-4 rounded-xl shadow-sm hover:shadow-md hover:bg-white/60 dark:hover:bg-gray-800/60 flex items-center gap-4 cursor-pointer group opacity-90 relative">
+<div class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-primary/60 rounded-full z-20 hover:scale-150 transition-transform cursor-crosshair shadow-[0_0_8px_rgba(128,236,19,0.4)]"></div>
+<div class="w-14 h-14 rounded-full bg-cover bg-center border-2 border-white dark:border-gray-700 shadow-sm" data-alt="一位年轻女子的肖像" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBmRLKWUYEgqmyaQyhn_-wpBFAgS7BAzi9aSlqbRqFSY4TjQYgayXjgecHAb0vO2vl6ReLKVIWoNPA6tKFe7CdJweLuQ_fN2LijhQ0AuHBSAK2Dk9UQoyeTISdv3zFrLlDM0kmNViFqsmisi-xVKt3d8XOZRAW32ZJkA2uvN_Lw4_gpEQSiv7yRjakqLZZMr82a1-yPWvI9kBqjq2B4gmIoEzlLoL-iFkUvfy5aUkXeldu4VTnODwSlWNAP45vNAeSu6rVlyGT8j9jw');">
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-[#141811] dark:text-white font-semibold truncate">萨拉·史密斯</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">出生：2001年8月15日</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-40 left-1/2 -translate-x-1/2 z-20">
+<div class="flex items-center gap-2 p-2 bg-white/80 dark:bg-black/60 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 dark:border-white/10">
+<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-gray-700 dark:text-gray-200 transition-colors" title="缩小">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<div class="px-2 text-sm font-semibold text-gray-600 dark:text-gray-300 min-w-[3rem] text-center">100%</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-gray-700 dark:text-gray-200 transition-colors" title="放大">
+<span class="material-symbols-outlined">add</span>
+</button>
+<div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-gray-700 dark:text-gray-200 transition-colors" title="居中视图">
+<span class="material-symbols-outlined">center_focus_strong</span>
+</button>
+</div>
+</div>
+<div class="absolute bottom-40 right-8 z-20 flex flex-col gap-4 items-end">
+<div class="bg-black/80 text-white text-xs px-3 py-1.5 rounded-lg mb-2 shadow-lg backdrop-blur-sm animate-bounce">
+                点击添加亲属
+            </div>
+<button class="w-16 h-16 bg-primary hover:bg-primary-dark text-[#141811] rounded-2xl shadow-[0_8px_30px_rgb(128,236,19,0.3)] flex items-center justify-center transition-all hover:scale-110 active:scale-95 group">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform duration-300">add</span>
+</button>
+</div>
+<aside class="absolute top-24 right-6 bottom-40 w-80 bg-white/70 dark:bg-black/70 backdrop-blur-xl border border-white/40 dark:border-white/10 rounded-2xl shadow-2xl p-6 transform translate-x-full lg:translate-x-0 transition-transform duration-500 ease-out z-30 flex flex-col hidden lg:flex">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-lg font-bold text-[#141811] dark:text-white">成员详情</h2>
+<button class="p-1.5 hover:bg-black/5 dark:hover:bg-white/10 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-gray-500 text-[20px]">close</span>
+</button>
+</div>
+<div class="flex flex-col items-center mb-6">
+<div class="w-24 h-24 rounded-full p-1 border-2 border-primary border-dashed mb-3 relative group">
+<div class="w-full h-full rounded-full bg-cover bg-center" data-alt="大卫·罗宾逊的特写" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuArIe14hvZER9xHWla37rdBlhmW-fBRcz1-yImnPSLOwy-voAkAGpkzSc04X3DyvcwuDCDdUt8mY26ZMgNHJb5yONW7qhNtMLQWnMmoujcdf29_5zakhsic07k-NbfYiNvTkhB5vuZt2OPPGtZNiVitl3ZnbjLKLJYL7YnB-UDW1MpsvwdCnTEzdMgUfgul2D9JAwRER20gAq69IaART2TCvZorLbIZ4lVSyYj_1uZZUBqJYYXYikFiUnZCLzQik2J_rNW4axVriZ0g');">
+</div>
+<button class="absolute bottom-0 right-0 p-1.5 bg-primary rounded-full text-[#141811] shadow-sm hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+<h3 class="text-xl font-bold text-[#141811] dark:text-white">大卫·罗宾逊</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">约翰·罗宾逊之子</p>
+</div>
+<div class="space-y-4 flex-1 overflow-y-auto no-scrollbar">
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-white/50 dark:bg-white/5 p-3 rounded-xl border border-white/40 dark:border-white/5">
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-1">出生日期</p>
+<p class="font-semibold text-sm">1998年6月21日</p>
+</div>
+<div class="bg-white/50 dark:bg-white/5 p-3 rounded-xl border border-white/40 dark:border-white/5">
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-1">所在地</p>
+<p class="font-semibold text-sm">美国 纽约</p>
+</div>
+</div>
+<div class="bg-white/50 dark:bg-white/5 p-4 rounded-xl border border-white/40 dark:border-white/5">
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-2">个人简介</p>
+<p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                        大卫目前在哥伦比亚大学攻读建筑学。他热爱徒步旅行和摄影。
+                    </p>
+</div>
+<div class="pt-4">
+<h4 class="text-sm font-bold text-[#141811] dark:text-white mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">family_star</span>
+                        直系亲属
+                    </h4>
+<div class="space-y-2">
+<div class="flex items-center gap-3 p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
+<div class="w-8 h-8 rounded-full bg-cover bg-center" data-alt="约翰·罗宾逊的小幅肖像" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBgNSXaVpODaWGq99vcv3Socy6HIBwV_nCh89V_EHwzLi5K7jm7XF2b_0SKzajaRgXxmqZKQ6mHYGz4K0ua7bIJp3gv_137BTX-UCJTO7VQYl4qEZ6fJJC9FMhL_jWlUxfreXPeSDMheftpfXVY3C-yvlmCqYOODw-C6fUbrZaz1_A2sZxxGSVyUWA5kZIliM4bcL9iz6j1nTp_lbwB0N-hmnsJQwxDLiWTjxH_BPo5YCCQT8YyPpG9o8vx4OkQQw3KZGt96jGI9gYD');"></div>
+<div class="flex-1">
+<p class="text-sm font-semibold">约翰·罗宾逊</p>
+<p class="text-xs text-gray-500">父亲</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-[18px]">chevron_right</span>
+</div>
+<div class="flex items-center gap-3 p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
+<div class="w-8 h-8 rounded-full bg-cover bg-center" data-alt="萨拉·史密斯的小幅肖像" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuADpL23-SAbNchI7nfMdbdMeVAWaExt7r7kQEHt2idcvmp_UvCHeQnlpI6I_D0T8jauuu2HSUEW2un8wSifIs1AkWqAUOGV4hMNBTi4jjp2C7HqzbcuXSZUm3-SO4HoJZjC08YSsCLLZOersSbGriU1YVFT7xY2PYx-I-XTrY0Dg-UpZIFmlNwOgv-QMn_TE0z_4EN6GQ5UZ4D8UpA1jrcZsb7pWfGEdjsAzM3fDnDNCAbSWFQrixE9c5OgbN0PvAnidfNVd0A5k_RJ');"></div>
+<div class="flex-1">
+<p class="text-sm font-semibold">萨拉·史密斯</p>
+<p class="text-xs text-gray-500">表亲</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-[18px]">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex gap-2">
+<button class="flex-1 bg-[#141811] hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-200 py-2.5 rounded-xl text-sm font-bold transition-colors">
+                    编辑资料
+                </button>
+<button class="w-10 flex items-center justify-center bg-red-50 hover:bg-red-100 text-red-500 rounded-xl transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</aside>
+<div class="absolute bottom-0 left-0 right-0 z-40 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-t border-white/40 dark:border-white/10 px-8 py-6 shadow-[0_-4px_30px_rgba(0,0,0,0.03)] transition-all">
+<div class="max-w-7xl mx-auto w-full flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">history_toggle_off</span>
+<span class="text-sm font-bold text-gray-700 dark:text-gray-200">时间轴浏览</span>
+</div>
+<div class="px-3 py-1 bg-primary/20 text-primary-dark dark:text-primary rounded-lg text-sm font-bold font-mono">
+                2024
+            </div>
+</div>
+<div class="relative w-full h-10 flex items-center group">
+<div class="absolute w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary/30 via-primary/80 to-primary w-full origin-left transition-all duration-300"></div>
+</div>
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 -ml-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border-2 border-primary rounded-full shadow-[0_0_15px_rgba(128,236,19,0.5)] cursor-ew-resize hover:scale-110 active:scale-95 transition-transform flex items-center justify-center z-10 group-hover:border-primary-dark">
+<div class="w-2.5 h-2.5 bg-primary rounded-full"></div>
+</div>
+</div>
+<div class="flex justify-between text-xs font-semibold text-gray-400 select-none px-1 tracking-wider uppercase">
+<span>1900</span>
+<span>1920</span>
+<span>1940</span>
+<span>1960</span>
+<span>1980</span>
+<span>2000</span>
+<span>2020</span>
+<span>2024</span>
+</div>
+</div>
+</div>
+<div class="absolute inset-0 z-50 flex items-start justify-center pt-28 pointer-events-none">
+<div class="relative translate-x-[280px] w-72 bg-primary-dark text-white rounded-2xl shadow-[0_20px_50px_-12px_rgba(107,197,14,0.3)] p-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pointer-events-auto">
+<div class="absolute top-8 -left-2 w-4 h-4 bg-primary-dark transform rotate-45"></div>
+<div class="flex items-start gap-3 mb-5">
+<div class="p-1.5 bg-white/20 rounded-full shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</div>
+<div>
+<h3 class="font-bold text-lg leading-tight">成功！</h3>
+<p class="text-white/90 text-sm mt-1 font-medium leading-snug">下一步：添加更多家庭成员吗？</p>
+</div>
+</div>
+<div class="space-y-3">
+<button class="w-full py-2.5 bg-white text-primary-dark hover:bg-white/90 rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">diversity_1</span>
+                添加父母
+            </button>
+<button class="w-full py-2.5 bg-black/10 hover:bg-black/20 text-white border border-white/20 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">group_add</span>
+                添加兄弟姐妹
+            </button>
+</div>
+</div>
+</div>
+</main>
+
+</body></html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>系统环境设置</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#9df425",
+                        "primary-dark": "#88d61f",
+                        "background-light": "#f7f8f5",
+                        "background-dark": "#1a2210",
+                        "surface-light": "rgba(255, 255, 255, 0.6)",
+                        "surface-dark": "rgba(26, 34, 16, 0.6)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "system-ui", "-apple-system", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                    backdropBlur: {
+                        'xs': '2px',
+                    }
+                },
+            },
+        }
+    </script>
+<style>::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(157, 244, 37, 0.3);border-radius: 20px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(157, 244, 37, 0.6);
+        }
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-stone-900 dark:text-stone-100 font-display antialiased h-screen overflow-hidden selection:bg-primary selection:text-background-dark">
+<div class="flex h-full w-full">
+<aside class="w-72 h-full flex flex-col border-r border-stone-200 dark:border-stone-800 bg-white/50 dark:bg-black/20 glass-panel z-20 hidden md:flex shrink-0">
+<div class="p-6 pb-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-background-dark shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-2xl font-bold">family_history</span>
+</div>
+<div>
+<h1 class="text-lg font-bold leading-none tracking-tight">家族谱系</h1>
+<p class="text-xs text-stone-500 dark:text-stone-400 font-medium mt-1">管理后台</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors hover:bg-white/60 dark:hover:bg-white/5 text-stone-600 dark:text-stone-300" href="#">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="text-sm font-medium">个人设置</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors hover:bg-white/60 dark:hover:bg-white/5 text-stone-600 dark:text-stone-300" href="#">
+<span class="material-symbols-outlined text-[24px]">diversity_3</span>
+<span class="text-sm font-medium">我的家族</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors hover:bg-white/60 dark:hover:bg-white/5 text-stone-600 dark:text-stone-300" href="#">
+<span class="material-symbols-outlined text-[24px]">account_tree</span>
+<span class="text-sm font-medium">家族树设置</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/20 dark:bg-primary/10 text-stone-900 dark:text-primary ring-1 ring-primary/50" href="#">
+<span class="material-symbols-outlined text-[24px] fill-current">settings</span>
+<span class="text-sm font-bold">系统设置</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors hover:bg-white/60 dark:hover:bg-white/5 text-stone-600 dark:text-stone-300 mt-auto" href="#">
+<span class="material-symbols-outlined text-[24px]">logout</span>
+<span class="text-sm font-medium">退出登录</span>
+</a>
+</nav>
+<div class="p-4 border-t border-stone-200 dark:border-stone-800">
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/50 dark:bg-white/5 border border-stone-100 dark:border-stone-800">
+<div class="w-8 h-8 rounded-full bg-stone-200 dark:bg-stone-700 overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" data-alt="Portrait of a smiling man with a beard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVABlcp1ym65jLVVGD_lgHRw8fr9GUnlUJ5KNjYvQR8_OmBCZfbKGh_-ULe9f48Uhkz7qCSBXrRE-OH_YDSsr1aeyhyUuFtTTy85mqQ0xv5qHtBqZaRfxs7o800KECxf3usOuYwCaUmrkIxuVGt8ksWh96v6TO8_iyWUcgcpnQRdpvrajBMk9cQeolkLJISLM_i87xYv4SzpE0I0r8kjO6i9mjSt3epPZgHE7P_stgOTmFnv-jPs354X0VGaSeG1bdNcVJ1PI3R46b"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium truncate">Alex Robinson</p>
+<p class="text-xs text-stone-500 truncate">管理员</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-full overflow-hidden relative">
+<header class="flex-shrink-0 px-8 py-6 pb-2">
+<div class="flex flex-col gap-1">
+<h1 class="text-3xl font-black text-stone-900 dark:text-white tracking-tight">系统环境设置</h1>
+<p class="text-stone-500 dark:text-stone-400 text-base">配置您的数据库连接参数。</p>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-8 pt-4 pb-20">
+<div class="max-w-4xl flex flex-col gap-8">
+<section>
+<div class="flex items-center justify-between mb-4 px-2">
+<h2 class="text-xl font-bold text-stone-800 dark:text-stone-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">dns</span>
+                            数据库配置
+                        </h2>
+<span class="px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-xs font-semibold text-stone-500 border border-stone-200 dark:border-stone-700">PostgreSQL</span>
+</div>
+<div class="glass-panel bg-surface-light dark:bg-surface-dark border border-white/50 dark:border-white/10 rounded-3xl p-6 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<label class="flex flex-col gap-2">
+<span class="text-sm font-medium text-stone-700 dark:text-stone-300 ml-1">主机</span>
+<input class="w-full h-12 px-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow placeholder:text-stone-400 shadow-sm" placeholder="例如 127.0.0.1" type="text" value="localhost"/>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-sm font-medium text-stone-700 dark:text-stone-300 ml-1">端口</span>
+<input class="w-full h-12 px-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow placeholder:text-stone-400 shadow-sm" placeholder="例如 5432" type="number" value="5432"/>
+</label>
+<label class="flex flex-col gap-2 md:col-span-2">
+<span class="text-sm font-medium text-stone-700 dark:text-stone-300 ml-1">数据库名</span>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 text-[20px]">database</span>
+<input class="w-full h-12 pl-12 pr-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow placeholder:text-stone-400 shadow-sm" placeholder="例如 my_database" type="text" value="family_tree_prod_v1"/>
+</div>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-sm font-medium text-stone-700 dark:text-stone-300 ml-1">用户名</span>
+<input class="w-full h-12 px-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow placeholder:text-stone-400 shadow-sm" type="text" value="admin_user"/>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-sm font-medium text-stone-700 dark:text-stone-300 ml-1">密码</span>
+<input class="w-full h-12 px-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow placeholder:text-stone-400 shadow-sm" type="password" value="***********"/>
+</label>
+</div>
+<div class="mt-8 flex items-center justify-between border-t border-stone-200 dark:border-stone-700/50 pt-5">
+<div class="flex items-center gap-2 text-primary font-medium text-sm">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                连接已验证
+                            </div>
+<button class="group px-5 py-2.5 rounded-xl border border-stone-300 dark:border-stone-600 text-stone-700 dark:text-stone-300 font-medium text-sm hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] group-hover:rotate-180 transition-transform duration-500">sync</span>
+                                测试连接
+                            </button>
+</div>
+</div>
+</section>
+<div class="sticky bottom-0 z-10 -mx-8 px-8 py-4 bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark flex justify-end gap-3 mt-4">
+<button class="px-6 py-3 rounded-xl font-semibold text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors">
+                        取消
+                    </button>
+<button class="px-8 py-3 rounded-xl bg-primary text-background-dark font-bold hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">save</span>
+                        保存更改
+                    </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>分享家族邀请</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#82cf17",
+                        "background-light": "#f7f8f6",
+                        "background-dark": "#1a2111",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .frosted-glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .dark .frosted-glass {
+            background: rgba(26, 33, 17, 0.9);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-background-dark dark:text-background-light overflow-hidden">
+<div class="flex h-screen w-full flex-row">
+<div class="hidden lg:flex flex-col w-72 h-full border-r border-[#e1e5dc] dark:border-[#2a351f] bg-white dark:bg-[#1a2111] p-4 justify-between shrink-0 z-20">
+<div class="flex flex-col gap-6">
+<div class="flex gap-3 items-center p-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 shadow-sm ring-2 ring-primary/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBDgdZ_5p1t737MN-pzyTx3O5Jzh6EQsvgdcGTBXICGrrqfjlZb1q66imXFzHfruibNTHM02dge7xjmp3oIOFe9a_aVLjxZSqGM-cWt9SRxaEL5jImSGScvdF1ZqHfsE6yo1dlqU8PkbPOU4063H-84WbA4Y9VgXSIY_mHwsxpgkCcfWq442HAZAnY_0-b24YOHOW4VGdyO3w8QWBHMiQNwW0Xx8_UZwXHNio-WqcIRWQQVNqESjSLNQd5g7qwZ24RHc2ZbUzpBP85J");'></div>
+<div class="flex flex-col">
+<h1 class="text-background-dark dark:text-white text-base font-bold leading-tight">汤普森家族</h1>
+<p class="text-[#788863] text-xs font-medium uppercase tracking-wide">管理员 • 专业版</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[#f3f4f0] dark:hover:bg-[#2a351f] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#788863] group-hover:text-background-dark dark:text-[#a0b085] dark:group-hover:text-primary">account_tree</span>
+<p class="text-background-dark dark:text-gray-200 text-sm font-medium">家族树</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 dark:bg-primary/20 transition-colors" href="#">
+<span class="material-symbols-outlined text-primary dark:text-primary fill-1">diversity_3</span>
+<p class="text-background-dark dark:text-white text-sm font-bold">我的家族</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[#f3f4f0] dark:hover:bg-[#2a351f] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#788863] group-hover:text-background-dark dark:text-[#a0b085] dark:group-hover:text-primary">photo_library</span>
+<p class="text-background-dark dark:text-gray-200 text-sm font-medium">相册回忆</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[#f3f4f0] dark:hover:bg-[#2a351f] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#788863] group-hover:text-background-dark dark:text-[#a0b085] dark:group-hover:text-primary">event</span>
+<p class="text-background-dark dark:text-gray-200 text-sm font-medium">家族大事记</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[#f3f4f0] dark:hover:bg-[#2a351f] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#788863] group-hover:text-background-dark dark:text-[#a0b085] dark:group-hover:text-primary">settings</span>
+<p class="text-background-dark dark:text-gray-200 text-sm font-medium">设置</p>
+</a>
+</nav>
+</div>
+<div class="p-2">
+<button class="flex items-center gap-3 px-4 py-3 w-full rounded-xl hover:bg-red-50 text-red-600 dark:hover:bg-red-900/20 dark:text-red-400 transition-colors">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-medium">退出登录</p>
+</button>
+</div>
+</div>
+<div class="relative flex-1 h-full flex flex-col bg-background-light dark:bg-[#0f120a] overflow-hidden">
+<header class="h-20 shrink-0 border-b border-[#e1e5dc] dark:border-[#2a351f] bg-white/80 dark:bg-[#1a2111]/80 backdrop-blur-xl flex items-center justify-between px-8 z-10">
+<div class="flex items-center gap-4">
+<button class="lg:hidden p-2 -ml-2 text-gray-500">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div>
+<h2 class="text-xl font-bold text-[#1a2111] dark:text-white tracking-tight">我的家族成员</h2>
+<p class="text-xs text-[#788863] mt-0.5">共 128 位成员</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-[#788863]">search</span>
+<input class="pl-10 pr-4 py-2.5 bg-[#f3f4f0] dark:bg-[#252b1e] border-none rounded-xl text-sm w-64 focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-[#788863]/60 text-[#1a2111] dark:text-white" placeholder="搜索成员姓名..." type="text"/>
+</div>
+<div class="h-8 w-px bg-[#e1e5dc] dark:bg-[#2a351f] mx-2"></div>
+<button class="relative p-2 rounded-xl hover:bg-[#f3f4f0] dark:hover:bg-[#2a351f] text-[#5a664b] transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-[#1a2111]"></span>
+</button>
+<button class="size-10 rounded-full bg-gray-200 border-2 border-white dark:border-[#2a351f] shadow-sm overflow-hidden transition-transform hover:scale-105 active:scale-95">
+<div class="w-full h-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBDgdZ_5p1t737MN-pzyTx3O5Jzh6EQsvgdcGTBXICGrrqfjlZb1q66imXFzHfruibNTHM02dge7xjmp3oIOFe9a_aVLjxZSqGM-cWt9SRxaEL5jImSGScvdF1ZqHfsE6yo1dlqU8PkbPOU4063H-84WbA4Y9VgXSIY_mHwsxpgkCcfWq442HAZAnY_0-b24YOHOW4VGdyO3w8QWBHMiQNwW0Xx8_UZwXHNio-WqcIRWQQVNqESjSLNQd5g7qwZ24RHc2ZbUzpBP85J");'></div>
+</button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto p-8 relative">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 opacity-30 pointer-events-none select-none filter blur-[1px]">
+<div class="bg-white dark:bg-[#1a2111] p-5 rounded-2xl border border-[#e1e5dc] dark:border-[#2a351f] flex items-center gap-4 shadow-sm">
+<div class="size-12 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+<div class="space-y-2 w-full">
+<div class="h-4 bg-gray-100 dark:bg-gray-800 rounded w-2/3"></div>
+<div class="h-3 bg-gray-50 dark:bg-gray-800 rounded w-1/3"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1a2111] p-5 rounded-2xl border border-[#e1e5dc] dark:border-[#2a351f] flex items-center gap-4 shadow-sm">
+<div class="size-12 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+<div class="space-y-2 w-full">
+<div class="h-4 bg-gray-100 dark:bg-gray-800 rounded w-3/4"></div>
+<div class="h-3 bg-gray-50 dark:bg-gray-800 rounded w-1/2"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1a2111] p-5 rounded-2xl border border-[#e1e5dc] dark:border-[#2a351f] flex items-center gap-4 shadow-sm">
+<div class="size-12 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+<div class="space-y-2 w-full">
+<div class="h-4 bg-gray-100 dark:bg-gray-800 rounded w-1/2"></div>
+<div class="h-3 bg-gray-50 dark:bg-gray-800 rounded w-1/3"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1a2111] p-5 rounded-2xl border border-[#e1e5dc] dark:border-[#2a351f] flex items-center gap-4 shadow-sm">
+<div class="size-12 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+<div class="space-y-2 w-full">
+<div class="h-4 bg-gray-100 dark:bg-gray-800 rounded w-2/3"></div>
+<div class="h-3 bg-gray-50 dark:bg-gray-800 rounded w-1/4"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1a2111] p-5 rounded-2xl border border-[#e1e5dc] dark:border-[#2a351f] flex items-center gap-4 shadow-sm">
+<div class="size-12 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+<div class="space-y-2 w-full">
+<div class="h-4 bg-gray-100 dark:bg-gray-800 rounded w-3/4"></div>
+<div class="h-3 bg-gray-50 dark:bg-gray-800 rounded w-1/2"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1a2111] p-5 rounded-2xl border border-[#e1e5dc] dark:border-[#2a351f] flex items-center gap-4 shadow-sm">
+<div class="size-12 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+<div class="space-y-2 w-full">
+<div class="h-4 bg-gray-100 dark:bg-gray-800 rounded w-3/4"></div>
+<div class="h-3 bg-gray-50 dark:bg-gray-800 rounded w-1/2"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1a2111] p-5 rounded-2xl border border-[#e1e5dc] dark:border-[#2a351f] flex items-center gap-4 shadow-sm">
+<div class="size-12 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+<div class="space-y-2 w-full">
+<div class="h-4 bg-gray-100 dark:bg-gray-800 rounded w-3/4"></div>
+<div class="h-3 bg-gray-50 dark:bg-gray-800 rounded w-1/2"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1a2111] p-5 rounded-2xl border border-[#e1e5dc] dark:border-[#2a351f] flex items-center gap-4 shadow-sm">
+<div class="size-12 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+<div class="space-y-2 w-full">
+<div class="h-4 bg-gray-100 dark:bg-gray-800 rounded w-3/4"></div>
+<div class="h-3 bg-gray-50 dark:bg-gray-800 rounded w-1/2"></div>
+</div>
+</div>
+</div>
+</main>
+<div class="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+<div class="frosted-glass relative w-full max-w-[560px] flex flex-col rounded-3xl shadow-2xl border border-white/50 dark:border-white/10 overflow-hidden animate-fade-in-up">
+<button class="absolute top-4 right-4 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-gray-500 dark:text-gray-400 z-10">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div class="px-8 pt-10 pb-2 text-center relative">
+<div class="size-16 bg-primary/20 text-primary rounded-2xl rotate-3 flex items-center justify-center mx-auto mb-6 shadow-sm border border-primary/20">
+<span class="material-symbols-outlined" style="font-size: 32px;">mark_email_unread</span>
+</div>
+<h2 class="text-[#151811] dark:text-white tracking-tight text-[26px] font-bold leading-tight">分享家族邀请</h2>
+<p class="text-[#5a664b] dark:text-[#a0b085] text-base font-normal leading-relaxed mt-3 max-w-sm mx-auto">
+                        分享此唯一邀请码，邀请亲友查看并共同完善<span class="font-semibold text-primary">汤普森家族树</span>。
+                    </p>
+</div>
+<div class="px-8 py-6">
+<div class="bg-white/60 dark:bg-black/20 border border-primary/30 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 relative overflow-hidden group">
+<div class="absolute -right-12 -top-12 size-40 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="absolute -left-12 -bottom-12 size-40 bg-primary/10 rounded-full blur-3xl"></div>
+<p class="text-xs font-bold uppercase tracking-widest text-[#788863]">家族邀请码</p>
+<div class="flex items-center gap-3 relative z-10 my-2">
+<h1 class="text-[#1a2111] dark:text-white tracking-widest text-4xl font-bold font-mono">TREE-8921-AVO3</h1>
+</div>
+<button class="text-primary hover:text-primary/80 text-xs font-medium flex items-center gap-1.5 transition-colors px-3 py-1 rounded-full hover:bg-primary/5">
+<span class="material-symbols-outlined text-[16px]">refresh</span>
+                            重置邀请码
+                        </button>
+</div>
+</div>
+<div class="px-8 pb-4">
+<label class="block text-sm font-semibold text-[#151811] dark:text-gray-200 mb-2 ml-1">分享链接</label>
+<div class="flex w-full items-stretch rounded-xl shadow-sm transition-all group focus-within:ring-2 focus-within:ring-primary/50">
+<div class="relative flex-1">
+<div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+<span class="material-symbols-outlined text-[20px]">link</span>
+</div>
+<input class="w-full h-12 bg-white dark:bg-[#252b1e] border border-[#e1e5dc] dark:border-[#3a452b] text-[#151811] dark:text-white text-sm rounded-l-xl pl-11 pr-4 focus:outline-none focus:border-primary truncate font-medium" readonly="" type="text" value="familytree.app/join/tree-8921-avo3"/>
+</div>
+<button class="bg-primary hover:bg-[#75ba15] text-white px-5 rounded-r-xl font-medium transition-colors flex items-center gap-2 shrink-0 shadow-sm shadow-primary/30">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+<span>复制链接</span>
+</button>
+</div>
+</div>
+<div class="px-8 pb-8 pt-1">
+<button class="w-full py-3 rounded-xl border border-[#e1e5dc] dark:border-[#3a452b] hover:border-primary/50 hover:bg-white/50 dark:hover:bg-white/5 text-[#5a664b] dark:text-[#a0b085] font-semibold transition-all flex items-center justify-center gap-2 group">
+<span class="material-symbols-outlined text-[22px] group-hover:text-primary transition-colors">qr_code_2</span>
+<span class="group-hover:text-primary transition-colors">生成二维码</span>
+</button>
+</div>
+<div class="bg-[#f3f4f0]/80 dark:bg-[#151a0e]/80 border-t border-white/20 dark:border-white/5 p-6 md:px-8">
+<p class="text-xs font-bold text-[#788863] uppercase mb-4 tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">info</span>
+                        如何邀请
+                    </p>
+<div class="space-y-4">
+<div class="flex gap-4 items-start group">
+<div class="flex-shrink-0 size-6 rounded-full bg-white dark:bg-white/10 text-primary border border-primary/20 flex items-center justify-center text-xs font-bold shadow-sm">1</div>
+<p class="text-sm text-[#151811] dark:text-gray-300 leading-snug pt-0.5 group-hover:text-primary transition-colors">将链接或邀请码发送给您的家庭成员。</p>
+</div>
+<div class="flex gap-4 items-start group">
+<div class="flex-shrink-0 size-6 rounded-full bg-white dark:bg-white/10 text-primary border border-primary/20 flex items-center justify-center text-xs font-bold shadow-sm">2</div>
+<p class="text-sm text-[#151811] dark:text-gray-300 leading-snug pt-0.5 group-hover:text-primary transition-colors">亲友注册免费账户，保障数据隐私。</p>
+</div>
+<div class="flex gap-4 items-start group">
+<div class="flex-shrink-0 size-6 rounded-full bg-white dark:bg-white/10 text-primary border border-primary/20 flex items-center justify-center text-xs font-bold shadow-sm">3</div>
+<p class="text-sm text-[#151811] dark:text-gray-300 leading-snug pt-0.5 group-hover:text-primary transition-colors">输入邀请码，立即加入家族树协作。</p>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-black/5 dark:border-white/5 text-center">
+<p class="text-xs text-[#788863] dark:text-[#5a664b] flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]">security</span>
+                            为了安全起见，此邀请码将在 7 天后过期。
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

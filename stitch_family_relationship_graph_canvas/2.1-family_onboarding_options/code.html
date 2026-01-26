@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>家族引导入场界面</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100..900&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;family=Noto+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#80ec13",
+                        "primary-dark": "#6bc510",
+                        "background-light": "#f7f8f6",
+                        "background-dark": "#192210",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#232e18",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans SC", "Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Noto Sans SC", "Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .glass-card {
+            background: rgba(35, 46, 24, 0.6);
+            border: 1px solid rgba(128, 236, 19, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white transition-colors duration-200">
+<div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+<div class="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] opacity-60"></div>
+<div class="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] opacity-50"></div>
+</div>
+<div class="relative z-10 flex min-h-screen flex-col">
+<header class="w-full px-6 py-4 lg:px-12 flex items-center justify-between">
+<div class="flex items-center gap-3 text-slate-900 dark:text-white">
+<div class="size-8 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl">eco</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight">家族树</h2>
+</div>
+<nav class="hidden sm:flex items-center gap-6">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">帮助中心</a>
+<button class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 bg-white/50 dark:bg-black/20 border border-slate-200 dark:border-slate-700 rounded-full hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined text-[1.25rem]">settings</span>
+<span>设置</span>
+</button>
+</nav>
+</header>
+<main class="flex-1 flex flex-col items-center justify-center px-4 py-8 md:py-16">
+<div class="max-w-4xl w-full flex flex-col items-center text-center mb-12">
+<h1 class="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-4">
+                    欢迎来到您的家族树
+                </h1>
+<p class="text-lg text-slate-600 dark:text-slate-300 max-w-lg">
+                    您今天想如何开始？请选择以下选项开启您的旅程。
+                </p>
+</div>
+<div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 px-4">
+<button class="group relative flex flex-col items-center text-center p-8 md:p-12 glass-card rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border-2 border-transparent hover:border-primary/50 text-left">
+<div class="size-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-primary text-5xl">potted_plant</span>
+</div>
+<h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">创建新家族</h3>
+<p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+                        从零开始建立您的家族树。您将成为新数字遗产的第一个分支。
+                    </p>
+<div class="mt-auto flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider group-hover:gap-3 transition-all">
+<span>开始设置</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</div>
+</button>
+<button class="group relative flex flex-col items-center text-center p-8 md:p-12 glass-card rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border-2 border-transparent hover:border-primary/50 text-left">
+<div class="size-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-primary text-5xl">diversity_3</span>
+</div>
+<h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">加入现有家族</h3>
+<p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+                        拥有邀请码？立即与亲戚联系并探索你们共同的历史。
+                    </p>
+<div class="mt-auto flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider group-hover:gap-3 transition-all">
+<span>输入代码</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</div>
+</button>
+</div>
+</main>
+<footer class="w-full py-8 mt-auto">
+<div class="flex flex-col items-center gap-4 text-center">
+<div class="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500 dark:text-slate-400">
+<a class="hover:text-primary transition-colors" href="#">隐私政策</a>
+<span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+<a class="hover:text-primary transition-colors" href="#">服务条款</a>
+</div>
+<p class="text-xs text-slate-400 dark:text-slate-500">© 2023 家族树应用。保留所有权利。</p>
+</div>
+</footer>
+</div>
+</body></html>

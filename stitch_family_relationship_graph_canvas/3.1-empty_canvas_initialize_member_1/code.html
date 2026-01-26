@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AncestryFlow - Initialize Member</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#80ec13",
+                        "background-light": "#f7f8f6",
+                        "background-dark": "#192210",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                    }
+                },
+            },
+        }
+    </script>
+<style>.canvas-pattern {
+            background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+        }
+        .dark .canvas-pattern {
+            background-image: radial-gradient(#2a3820 1.5px, transparent 1.5px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#141811] dark:text-white font-display overflow-hidden h-screen flex flex-col group/design-root">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e5e7eb] dark:border-b-[#2a3820] bg-white/90 dark:bg-[#192210]/90 backdrop-blur-md px-6 py-3 z-50">
+<div class="flex items-center gap-4 text-[#141811] dark:text-white">
+<div class="flex items-center gap-2">
+<div class="size-8 flex items-center justify-center text-primary bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined">family_history</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">AncestryFlow</h2>
+</div>
+<div class="hidden md:flex h-6 w-px bg-gray-200 dark:bg-gray-700 mx-2"></div>
+<div class="hidden md:flex flex-wrap gap-2 items-center">
+<a class="text-gray-500 dark:text-gray-400 text-sm font-medium hover:text-primary transition-colors" href="#">My Trees</a>
+<span class="text-gray-400 dark:text-gray-600 text-sm">/</span>
+<span class="text-[#141811] dark:text-white text-sm font-medium">Untitled Tree</span>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-6">
+<button class="hidden sm:flex cursor-pointer items-center justify-center overflow-hidden rounded-xl h-9 px-4 hover:bg-gray-100 dark:hover:bg-[#2a3820] text-[#141811] dark:text-white text-sm font-bold leading-normal tracking-[0.015em] transition-colors">
+<span class="material-symbols-outlined text-[20px] mr-2">settings</span>
+<span class="truncate">Settings</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-white dark:ring-[#2a3820] shadow-sm cursor-pointer" data-alt="Profile picture of the current user" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBEY90FXOAbAh3hReaBXb0pyEpaRnbpfk_Yz1j708izB-IoJrS3unoSFIDz5Xd7oN1h3AwOS_-8FrLUYzCnMBc8JRHUniDZu6MsmYgDMtlDjF-zrZJ5DRJ7vh0PId9FqQtMc1SQYCGd9uWXU18qFXruDRjKGfAfg1a5X0vE7jzenqtfy0pBCzKPkqgKzorhQz6PilEmezJcyJR0_Uo22v7XPTyCubBBukwJ5sNTGbcmJCbpjTiQxXgANnEiyV3TE1xSfy6gOdm3rDGx");'>
+</div>
+</div>
+</header>
+<main class="relative flex-1 w-full h-full overflow-hidden bg-background-light dark:bg-background-dark">
+<div class="absolute inset-0 canvas-pattern opacity-60 pointer-events-none"></div>
+<div class="absolute inset-0 flex flex-col items-center justify-center p-4 z-10">
+<div class="mb-8 animate-bounce-slow">
+<div class="relative px-5 py-2.5 bg-[#141811] dark:bg-primary text-white dark:text-[#141811] text-sm font-semibold rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] transform transition-transform hover:-translate-y-1">
+                    点击添加您的首位成员
+<div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#141811] dark:bg-primary rotate-45 rounded-sm"></div>
+</div>
+</div>
+<button class="group/ghost relative flex flex-col items-center justify-center w-[200px] h-[280px] rounded-2xl border-2 border-dashed border-[#d1d5db] dark:border-[#4b5563] bg-white/60 dark:bg-white/5 hover:border-primary hover:bg-primary/5 hover:scale-105 transition-all duration-300 ease-out cursor-pointer backdrop-blur-sm shadow-sm hover:shadow-xl">
+<div class="flex items-center justify-center w-20 h-20 rounded-full bg-[#f2f4f0] dark:bg-[#2a3820] text-gray-400 group-hover/ghost:text-primary group-hover/ghost:bg-white dark:group-hover/ghost:bg-[#192210] group-hover/ghost:shadow-lg transition-all duration-300">
+<span class="material-symbols-outlined text-5xl">add</span>
+</div>
+<span class="mt-6 text-base font-bold text-gray-400 group-hover/ghost:text-[#141811] dark:group-hover/ghost:text-primary transition-colors">添加成员</span>
+</button>
+<div class="mt-8 max-w-[480px] text-center px-4 py-2 rounded-lg bg-white/40 dark:bg-black/20 backdrop-blur-sm border border-white/50 dark:border-white/5">
+<p class="text-gray-600 dark:text-gray-300 text-sm font-medium leading-normal">
+                    该成员将被设定为家族树的<span class="text-primary font-bold">中心成员</span>
+</p>
+</div>
+</div>
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20">
+<div class="flex items-center gap-1 p-1.5 bg-white/90 dark:bg-[#192210]/90 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 dark:border-gray-800 ring-1 ring-black/5">
+<button class="flex items-center justify-center size-10 rounded-full text-[#141811] dark:text-gray-300 hover:bg-background-light dark:hover:bg-[#2a3820] transition-colors" title="Zoom Out">
+<span class="material-symbols-outlined text-[20px]">remove</span>
+</button>
+<div class="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+<span class="px-2 text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[3rem] text-center select-none">100%</span>
+<div class="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+<button class="flex items-center justify-center size-10 rounded-full text-[#141811] dark:text-gray-300 hover:bg-background-light dark:hover:bg-[#2a3820] transition-colors" title="Zoom In">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-full text-[#141811] dark:text-gray-300 hover:bg-background-light dark:hover:bg-[#2a3820] ml-1 transition-colors" title="Recenter Canvas">
+<span class="material-symbols-outlined text-[20px]">center_focus_strong</span>
+</button>
+</div>
+</div>
+<div class="absolute bottom-10 right-10 hidden lg:block">
+<div class="bg-white/80 dark:bg-[#192210]/80 backdrop-blur-sm px-4 py-2 rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm">
+<p class="text-xs text-gray-400 font-medium">Hold Space to pan</p>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  password      String
+  name          String?
+  nickname      String?
+  phone         String?   @unique
+  email         String?   @unique
+  location      String?
+  avatar        String?
+  bio           String?
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  familyMemberships FamilyUser[]
+  createdFamilies   Family[]     @relation("FamilyCreator")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  users       FamilyUser[]
+  privileges  Privilege[]
+}
+
+model Privilege {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  roleId      String
+  role        Role     @relation(fields: [roleId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Family {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  shareCode   String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  creatorId   String
+  creator     User     @relation("FamilyCreator", fields: [creatorId], references: [id])
+  users       FamilyUser[]
+  treeMembers Member[]
+  connections Connection[]
+}
+
+model FamilyUser {
+  id        String   @id @default(cuid())
+  userId    String
+  familyId  String
+  roleId    String
+  joinedAt  DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  family    Family   @relation(fields: [familyId], references: [id])
+  role      Role     @relation(fields: [roleId], references: [id])
+  @@unique([userId, familyId])
+}
+
+model Member {
+  id          String    @id @default(cuid())
+  firstName   String
+  lastName    String?
+  nickname    String?
+  gender      String    @default("male")
+  birthDate   DateTime?
+  deathDate   DateTime?
+  isAlive     Boolean   @default(true)
+  bio         String?
+  avatar      String?
+  x           Int?      @default(0)
+  y           Int?      @default(0)
+  familyId    String
+  family      Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  connectionsFrom Connection[] @relation("FromMember")
+  connectionsTo   Connection[] @relation("ToMember")
+}
+
+model Connection {
+  id          String   @id @default(cuid())
+  fromId      String
+  toId        String
+  type        String
+  extra       String?
+  familyId    String
+  family      Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  fromMember  Member   @relation("FromMember", fields: [fromId], references: [id], onDelete: Cascade)
+  toMember    Member   @relation("ToMember", fields: [toId], references: [id], onDelete: Cascade)
+}

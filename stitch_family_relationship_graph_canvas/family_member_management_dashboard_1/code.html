@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>成员管理与信息编辑</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#80ec13",
+              "background-light": "#f7f8f6",
+              "background-dark": "#192210",
+              "surface-light": "#ffffff",
+              "surface-dark": "#222d1a",
+              "text-main": "#141811",
+              "text-secondary": "#5e6e4d",
+              "border-light": "#e0e6db",
+              "border-dark": "#344026",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }.toggle-checkbox:checked {
+            right: 0;
+            border-color: #80ec13;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #80ec13;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }.custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #e0e6db;
+            border-radius: 20px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #344026;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white h-screen flex overflow-hidden">
+<aside class="w-64 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark flex-col hidden lg:flex shrink-0">
+<div class="h-16 flex items-center gap-3 px-6 border-b border-border-light dark:border-border-dark">
+<div class="text-primary">
+<span class="material-symbols-outlined icon-fill" style="font-size: 32px;">diversity_2</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">家族名录</h2>
+</div>
+<nav class="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:text-text-main hover:bg-background-light dark:hover:bg-surface-dark transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-medium">个人设置</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-text-main font-bold shadow-sm" href="#">
+<span class="material-symbols-outlined icon-fill">diversity_3</span>
+<span>我的家族</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:text-text-main hover:bg-background-light dark:hover:bg-surface-dark transition-colors" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-medium">家族树设置</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:text-text-main hover:bg-background-light dark:hover:bg-surface-dark transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-medium">系统设置</span>
+</a>
+</nav>
+<div class="p-4 border-t border-border-light dark:border-border-dark">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-medium">退出登录</span>
+</a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+<header class="w-full bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark h-16 flex items-center justify-between px-4 md:px-10 shrink-0 z-10">
+<div class="flex items-center gap-4 lg:hidden">
+<button class="p-1 text-text-secondary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="text-primary lg:hidden">
+<span class="material-symbols-outlined icon-fill" style="font-size: 28px;">diversity_2</span>
+</div>
+</div>
+<div class="flex-1 max-w-md hidden md:block ml-0 lg:ml-0">
+<label class="relative flex w-full items-center">
+<div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="w-full h-10 pl-11 pr-4 rounded-xl bg-background-light dark:bg-background-dark border-none focus:ring-2 focus:ring-primary text-sm placeholder:text-text-secondary dark:text-white" placeholder="搜索家族成员..." type="text"/>
+</label>
+</div>
+<div class="flex items-center gap-4 shrink-0 ml-auto">
+<button class="flex items-center justify-center gap-2 h-10 px-4 bg-primary hover:bg-opacity-90 transition-colors rounded-xl text-text-main text-sm font-bold">
+<span class="material-symbols-outlined" style="font-size: 20px;">add</span>
+<span class="hidden sm:inline">添加成员</span>
+</button>
+<div class="h-8 w-px bg-border-light dark:bg-border-dark mx-2 hidden sm:block"></div>
+<div class="size-10 rounded-full bg-cover bg-center border-2 border-white shadow-sm cursor-pointer" data-alt="User profile avatar showing a smiling person" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBQ-zp4ZrjkMONvPLXTZiTOzvwlBPZhcUSJgU_VsTYezjvB9oTZUgeN9Me0nxcfxzkOMNQt-HnUUVplUEBDBcRB6bWIGd21v90x4o1qUPph_BrWqqpSH8IIAkJ_0ajwdN4LD8awG16wI8WVkIC50-s9KehwjQB90H8STKV0hEamyo1CDM6GA2cLwtcwwe-bFmCU-BtyBqgPW44LcC5CfG-WDoJoa9Dnuc_CQtDpAG1dTJaHvZ8oiD13Z11OfW41hLj88FmTqFab1b7J');"></div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto w-full p-4 md:p-10 flex flex-col gap-8">
+<div class="flex flex-col gap-2">
+<div class="flex flex-wrap gap-2 items-center text-sm">
+<a class="text-text-secondary hover:text-primary font-medium" href="#">首页</a>
+<span class="text-text-secondary">/</span>
+<span class="text-text-main dark:text-white font-medium">家族成员</span>
+</div>
+<h1 class="text-3xl font-bold text-text-main dark:text-white mt-2">我的家族树</h1>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div class="flex flex-col gap-1 p-5 rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-text-secondary text-sm font-medium">成员总数</p>
+<span class="material-symbols-outlined text-primary">groups</span>
+</div>
+<p class="text-2xl font-bold text-text-main dark:text-white">42</p>
+</div>
+<div class="flex flex-col gap-1 p-5 rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-text-secondary text-sm font-medium">世代数</p>
+<span class="material-symbols-outlined text-primary">family_history</span>
+</div>
+<p class="text-2xl font-bold text-text-main dark:text-white">4</p>
+</div>
+<div class="flex flex-col gap-1 p-5 rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-text-secondary text-sm font-medium">在世亲属</p>
+<span class="material-symbols-outlined text-primary">favorite</span>
+</div>
+<p class="text-2xl font-bold text-text-main dark:text-white">28</p>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface-light dark:bg-surface-dark p-2 rounded-xl border border-border-light dark:border-border-dark">
+<div class="flex items-center gap-2 p-1">
+<button class="flex items-center gap-2 px-3 py-2 text-text-main dark:text-white hover:bg-background-light dark:hover:bg-background-dark rounded-lg transition-colors">
+<span class="material-symbols-outlined">tune</span>
+<span class="text-sm font-medium">筛选</span>
+</button>
+<div class="h-6 w-px bg-border-light dark:bg-border-dark"></div>
+<button class="flex items-center gap-2 px-3 py-2 text-text-main dark:text-white hover:bg-background-light dark:hover:bg-background-dark rounded-lg transition-colors">
+<span class="material-symbols-outlined">sort</span>
+<span class="text-sm font-medium">排序</span>
+</button>
+</div>
+<div class="flex items-center gap-2 w-full sm:w-auto">
+<div class="flex p-1 bg-background-light dark:bg-background-dark rounded-lg w-full sm:w-auto">
+<button class="flex-1 sm:flex-none p-2 bg-white dark:bg-surface-dark shadow-sm rounded-md text-text-main dark:text-white">
+<span class="material-symbols-outlined icon-fill">grid_view</span>
+</button>
+<button class="flex-1 sm:flex-none p-2 text-text-secondary hover:text-text-main transition-colors">
+<span class="material-symbols-outlined">view_list</span>
+</button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 pb-20">
+<div class="group relative flex flex-col bg-surface-light dark:bg-surface-dark rounded-xl border-2 border-primary shadow-sm overflow-hidden transition-all hover:shadow-md">
+<div class="absolute top-3 right-3">
+<button class="p-1 rounded-full text-text-secondary hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="p-6 flex flex-col items-center gap-4 border-b border-border-light dark:border-border-dark">
+<div class="relative">
+<div class="size-24 rounded-full bg-cover bg-center border-4 border-white dark:border-surface-dark shadow-sm" data-alt="Portrait of an elderly man with glasses smiling" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDi-wKU_teTEuxz3U2JxomPiwozTqZ2jKgrZSawPpSGstyMGNUwh1AZp5ylm2t7S5-d8bQaS1-nJfgu6gYBDC3S2vuna0IjvJraCV_oy2YFVnCdq8CQ2no6Z1tv6wxFDD19UWHItT4BaCl68mde_gI6NTFM7rDK_cVMRpxw_q82lG3ci7OVSNSm2zJwbZMcSsn1wj7SN_1J-acU9-ylNu5p9ig68s-ejgNRs6HDyPQIqFFA558O-9YYt3c4xyHEH7Dsh7Xx48xN9ivy');"></div>
+<div class="absolute bottom-0 right-0 bg-primary text-text-main text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white dark:border-surface-dark">
+                            中心
+                        </div>
+</div>
+<div class="text-center">
+<h3 class="text-lg font-bold text-text-main dark:text-white">约瑟夫·史密斯</h3>
+<p class="text-sm text-text-secondary">祖父</p>
+</div>
+<div class="flex gap-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-text-secondary">
+                            78 岁
+                        </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-background-light dark:bg-background-dark text-text-secondary border border-border-light dark:border-border-dark">
+                            男
+                        </span>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3 text-sm">
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">cake</span>
+<span>1945年1月12日</span>
+</div>
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>波特兰, 俄勒冈</span>
+</div>
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">child_care</span>
+<span>出生地: 奥斯汀</span>
+</div>
+</div>
+<div class="mt-auto p-4 bg-background-light dark:bg-background-dark/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="relative inline-block w-8 h-4 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 border-primary appearance-none cursor-pointer" id="toggle1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-4 rounded-full bg-primary cursor-pointer" for="toggle1"></label>
+</div>
+<label class="text-xs font-medium text-text-main dark:text-white cursor-pointer" for="toggle1">中心成员</label>
+</div>
+<button class="text-xs font-bold text-primary hover:underline">编辑资料</button>
+</div>
+</div>
+<div class="group relative flex flex-col bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark shadow-sm overflow-hidden transition-all hover:shadow-md hover:border-primary/50">
+<div class="absolute top-3 right-3">
+<button class="p-1 rounded-full text-text-secondary hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="p-6 flex flex-col items-center gap-4 border-b border-border-light dark:border-border-dark">
+<div class="size-24 rounded-full bg-cover bg-center border-4 border-white dark:border-surface-dark shadow-sm" data-alt="Portrait of an elderly woman smiling warmly" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDOykVjp_oEvD-kndVdbjbgk72VjqhrEq-3x8NoR0D5uTzrx9oNtBVPw53Mgtfb8BFfhQ_yTMlGr6n3AAZSeZ24_ADbwyhpQEgg0fOXGJVno0sqMTQPB8gijVZcFUNl6xonkR3zN7mnYNdq6dadpTKeEHGO0XvAebZ5178-jpQqcfQYSsFIiYe4USL1Uv-uzLljMkO7BYSigUz5CAMbKfLvQgULQxKLiJroLWcDriFwLQXFE7Bdf56ND3Tng1vvZTD3Qvv3T0Du_RhT');"></div>
+<div class="text-center">
+<h3 class="text-lg font-bold text-text-main dark:text-white">莎拉·史密斯</h3>
+<p class="text-sm text-text-secondary">祖母</p>
+</div>
+<div class="flex gap-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-text-secondary">
+                            76 岁
+                        </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-background-light dark:bg-background-dark text-text-secondary border border-border-light dark:border-border-dark">
+                            女
+                        </span>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3 text-sm">
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">cake</span>
+<span>1947年3月8日</span>
+</div>
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>波特兰, 俄勒冈</span>
+</div>
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">child_care</span>
+<span>出生地: 西雅图</span>
+</div>
+</div>
+<div class="mt-auto p-4 bg-background-light dark:bg-background-dark/30 flex items-center justify-between">
+<div class="flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
+<div class="relative inline-block w-8 h-4 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer right-4" id="toggle2" name="toggle2" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-300 cursor-pointer" for="toggle2"></label>
+</div>
+<label class="text-xs font-medium text-text-secondary cursor-pointer" for="toggle2">中心成员</label>
+</div>
+<button class="text-xs font-bold text-text-secondary hover:text-primary transition-colors">编辑资料</button>
+</div>
+</div>
+<div class="group relative flex flex-col bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark shadow-sm overflow-hidden transition-all hover:shadow-md hover:border-primary/50">
+<div class="absolute top-3 right-3">
+<button class="p-1 rounded-full text-text-secondary hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="p-6 flex flex-col items-center gap-4 border-b border-border-light dark:border-border-dark">
+<div class="size-24 rounded-full bg-cover bg-center border-4 border-white dark:border-surface-dark shadow-sm" data-alt="Portrait of a middle-aged man with a beard" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC1Ez-cfFcDtDu-3GGQHehGCSbu3tvHMXz3yIAzFQgHS_VAHKiIUfSphCxf65m2Nj4r3iqKqQ4d53AQObf2nm_x0j4uvQ6uUozXH8Dz4jGEO_9fywRPYvppva0w0U_tVmFYrpD3i3noi7VzomdtaQL7YHN5NaeQEQd8EaRGNrtmuxCSm-tFUJoNO2nWnf3EvFQRClklV4ReOzQqwA0fQe0gpi1HgYpNaj8PAKZmhBQF0hbMnYKdJcFK6iTkSlIfUKbDKzQoq2Hkl4UJ');"></div>
+<div class="text-center">
+<h3 class="text-lg font-bold text-text-main dark:text-white">罗伯特·史密斯</h3>
+<p class="text-sm text-text-secondary">儿子</p>
+</div>
+<div class="flex gap-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-text-secondary">
+                            52 岁
+                        </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-background-light dark:bg-background-dark text-text-secondary border border-border-light dark:border-border-dark">
+                            男
+                        </span>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3 text-sm">
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">cake</span>
+<span>1971年7月22日</span>
+</div>
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>丹佛, 科罗拉多</span>
+</div>
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">child_care</span>
+<span>出生地: 波特兰</span>
+</div>
+</div>
+<div class="mt-auto p-4 bg-background-light dark:bg-background-dark/30 flex items-center justify-between">
+<div class="flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
+<div class="relative inline-block w-8 h-4 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer right-4" id="toggle3" name="toggle3" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-300 cursor-pointer" for="toggle3"></label>
+</div>
+<label class="text-xs font-medium text-text-secondary cursor-pointer" for="toggle3">中心成员</label>
+</div>
+<button class="text-xs font-bold text-text-secondary hover:text-primary transition-colors">编辑资料</button>
+</div>
+</div>
+<div class="group relative flex flex-col bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark shadow-sm overflow-hidden transition-all hover:shadow-md hover:border-primary/50">
+<div class="absolute top-3 right-3">
+<button class="p-1 rounded-full text-text-secondary hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="p-6 flex flex-col items-center gap-4 border-b border-border-light dark:border-border-dark">
+<div class="size-24 rounded-full bg-cover bg-center border-4 border-white dark:border-surface-dark shadow-sm" data-alt="Portrait of a young woman with long hair" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDGIPqiRClIeo-0vCX3tCIhhbRgDERLmONj-OcBJnNlVKk3fKGEkRu1gFBZbZI34OPUZO70V8wnsIicNKmxEu_V00aE6X_nQ_BjG9KVy1iP6P3aTFSnX31SLki_IhTyWUK7ij8LNZgG0dgji9a-MOQs6wR7uJE4sSpP5v-dxifnb7ihm3YDXY_LiPXB9vSWX524nXMcs0kl_p1w_Z-47pf5sUhTonQR21sA39wI3XQ4S8JgteBsYBrIOYBNPKUiTAzWhMw79LNnYU-P');"></div>
+<div class="text-center">
+<h3 class="text-lg font-bold text-text-main dark:text-white">爱丽丝·史密斯</h3>
+<p class="text-sm text-text-secondary">孙女</p>
+</div>
+<div class="flex gap-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-text-secondary">
+                            24 岁
+                        </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-background-light dark:bg-background-dark text-text-secondary border border-border-light dark:border-border-dark">
+                            女
+                        </span>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3 text-sm">
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">cake</span>
+<span>1999年11月15日</span>
+</div>
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>西雅图, 华盛顿</span>
+</div>
+<div class="flex items-center gap-3 text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">child_care</span>
+<span>出生地: 丹佛</span>
+</div>
+</div>
+<div class="mt-auto p-4 bg-background-light dark:bg-background-dark/30 flex items-center justify-between">
+<div class="flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
+<div class="relative inline-block w-8 h-4 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer right-4" id="toggle4" name="toggle4" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-300 cursor-pointer" for="toggle4"></label>
+</div>
+<label class="text-xs font-medium text-text-secondary cursor-pointer" for="toggle4">中心成员</label>
+</div>
+<button class="text-xs font-bold text-text-secondary hover:text-primary transition-colors">编辑资料</button>
+</div>
+</div>
+<button class="flex flex-col items-center justify-center gap-4 bg-transparent rounded-xl border-2 border-dashed border-border-light dark:border-border-dark min-h-[400px] hover:border-primary hover:bg-surface-light dark:hover:bg-surface-dark transition-all group">
+<div class="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-text-main transition-colors">
+<span class="material-symbols-outlined text-3xl">add</span>
+</div>
+<p class="font-bold text-text-secondary group-hover:text-text-main dark:group-hover:text-white transition-colors">添加家族成员</p>
+</button>
+</div>
+<div class="flex justify-center pb-10 mt-auto">
+<nav class="flex items-center gap-1">
+<button class="p-2 text-text-secondary hover:text-text-main">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="size-9 rounded-lg bg-primary text-text-main font-bold flex items-center justify-center text-sm">1</button>
+<button class="size-9 rounded-lg hover:bg-background-light dark:hover:bg-background-dark text-text-secondary font-medium flex items-center justify-center text-sm transition-colors">2</button>
+<button class="size-9 rounded-lg hover:bg-background-light dark:hover:bg-background-dark text-text-secondary font-medium flex items-center justify-center text-sm transition-colors">3</button>
+<span class="text-text-secondary px-2">...</span>
+<button class="size-9 rounded-lg hover:bg-background-light dark:hover:bg-background-dark text-text-secondary font-medium flex items-center justify-center text-sm transition-colors">12</button>
+<button class="p-2 text-text-secondary hover:text-text-main">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</nav>
+</div>
+</main>
+</div>
+<div class="fixed inset-0 z-50 flex items-center justify-center px-4">
+<div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+<div class="relative w-full max-w-2xl bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden transform transition-all max-h-[90vh] flex flex-col">
+<div class="px-6 py-4 border-b border-border-light/50 dark:border-border-dark/50 flex items-center justify-between shrink-0">
+<h2 class="text-xl font-bold text-text-main dark:text-white">编辑成员信息</h2>
+<button class="text-text-secondary hover:text-text-main dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-6 overflow-y-auto custom-scrollbar">
+<div class="flex flex-col items-center gap-3 mb-6">
+<div class="relative group">
+<div class="size-24 rounded-full bg-cover bg-center border-4 border-white dark:border-surface-dark shadow-md" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDi-wKU_teTEuxz3U2JxomPiwozTqZ2jKgrZSawPpSGstyMGNUwh1AZp5ylm2t7S5-d8bQaS1-nJfgu6gYBDC3S2vuna0IjvJraCV_oy2YFVnCdq8CQ2no6Z1tv6wxFDD19UWHItT4BaCl68mde_gI6NTFM7rDK_cVMRpxw_q82lG3ci7OVSNSm2zJwbZMcSsn1wj7SN_1J-acU9-ylNu5p9ig68s-ejgNRs6HDyPQIqFFA558O-9YYt3c4xyHEH7Dsh7Xx48xN9ivy');"></div>
+<button class="absolute bottom-0 right-0 bg-primary text-text-main rounded-full p-1.5 border-2 border-white dark:border-surface-dark shadow-sm hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-sm font-bold">photo_camera</span>
+</button>
+</div>
+<span class="text-sm font-medium text-text-secondary">点击修改头像</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-text-secondary">姓名</label>
+<input class="w-full h-11 px-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 border border-border-light dark:border-border-dark focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-text-main dark:text-white" type="text" value="约瑟夫·史密斯"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-text-secondary">昵称</label>
+<input class="w-full h-11 px-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 border border-border-light dark:border-border-dark focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-text-main dark:text-white" placeholder="可选" type="text"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-text-secondary">性别</label>
+<select class="w-full h-11 px-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 border border-border-light dark:border-border-dark focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-text-main dark:text-white">
+<option selected="" value="male">男</option>
+<option value="female">女</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-text-secondary">年龄</label>
+<input class="w-full h-11 px-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 border border-border-light dark:border-border-dark focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-text-main dark:text-white" type="number" value="78"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-text-secondary">出生日期</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+</div>
+<input class="w-full h-11 pl-10 pr-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 border border-border-light dark:border-border-dark focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-text-main dark:text-white" type="date" value="1945-01-12"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 opacity-50">
+<label class="text-sm font-medium text-text-secondary">过世日期</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined text-lg">event_busy</span>
+</div>
+<input class="w-full h-11 pl-10 pr-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 border border-border-light dark:border-border-dark focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-text-main dark:text-white" disabled="" type="date"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 md:col-span-2">
+<label class="text-sm font-medium text-text-secondary">目前所在地</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined text-lg">location_on</span>
+</div>
+<input class="w-full h-11 pl-10 pr-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 border border-border-light dark:border-border-dark focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-text-main dark:text-white" type="text" value="波特兰, 俄勒冈"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 md:col-span-2">
+<label class="text-sm font-medium text-text-secondary">出生所在地</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined text-lg">child_care</span>
+</div>
+<input class="w-full h-11 pl-10 pr-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 border border-border-light dark:border-border-dark focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-text-main dark:text-white" type="text" value="奥斯汀, 德克萨斯"/>
+</div>
+</div>
+<div class="md:col-span-2 flex flex-col sm:flex-row gap-6 mt-2 p-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 border border-border-light/50 dark:border-border-dark/50">
+<div class="flex items-center justify-between gap-4 flex-1">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-text-main dark:text-white">是否过世</span>
+<span class="text-xs text-text-secondary">开启后需填写过世日期</span>
+</div>
+<div class="relative inline-block w-12 h-6 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer" id="deceased-toggle" name="deceased-toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="deceased-toggle"></label>
+</div>
+</div>
+<div class="w-px h-10 bg-border-light dark:bg-border-dark hidden sm:block"></div>
+<div class="flex items-center justify-between gap-4 flex-1">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-text-main dark:text-white">设为中心成员</span>
+<span class="text-xs text-text-secondary">将此成员设为家族树视图的中心</span>
+</div>
+<div class="relative inline-block w-12 h-6 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-primary appearance-none cursor-pointer" id="center-toggle" name="center-toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-primary cursor-pointer" for="center-toggle"></label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="px-6 py-4 bg-white/50 dark:bg-black/20 border-t border-border-light/50 dark:border-border-dark/50 flex justify-end gap-3 shrink-0">
+<button class="px-5 py-2.5 rounded-xl font-medium text-text-secondary hover:text-text-main hover:bg-white/50 dark:hover:bg-surface-dark transition-colors text-sm">取消</button>
+<button class="px-5 py-2.5 rounded-xl bg-primary hover:bg-opacity-90 transition-colors font-bold text-text-main text-sm shadow-sm">保存修改</button>
+</div>
+</div>
+</div>
+
+</body></html>

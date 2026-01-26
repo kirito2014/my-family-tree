@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>用户登录与注册界面</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#80ec13",
+                        "primary-hover": "#6dd10d",
+                        "background-light": "#f7f8f6",
+                        "background-dark": "#192210",
+                        "cream-white": "#fcfdfa",
+                        "forest-dark": "#141811",
+                        "sage-text": "#758961",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+            outline: 1px solid rgba(128, 236, 19, 0.2);
+        }
+        .dark .glass-card {
+            background: rgba(25, 34, 16, 0.75);
+            border: 1px solid rgba(128, 236, 19, 0.1);
+            outline: 1px solid rgba(128, 236, 19, 0.15);
+        }
+        .bg-pattern {
+            background-color: #f7f8f6;
+            background-image: radial-gradient(#80ec13 0.5px, transparent 0.5px), radial-gradient(#80ec13 0.5px, #f7f8f6 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.4;
+        }
+        .dark .bg-pattern {
+            background-color: #192210;
+            background-image: radial-gradient(#80ec13 0.5px, transparent 0.5px), radial-gradient(#80ec13 0.5px, #192210 0.5px);
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-forest-dark dark:text-white antialiased transition-colors duration-300">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden">
+<div class="absolute inset-0 z-0 bg-pattern pointer-events-none"></div>
+<div class="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-3xl pointer-events-none mix-blend-multiply dark:mix-blend-lighten"></div>
+<div class="absolute -bottom-[20%] -left-[10%] w-[500px] h-[500px] bg-[#dcfce7] dark:bg-[#2d3b22] rounded-full blur-3xl pointer-events-none mix-blend-multiply dark:mix-blend-lighten"></div>
+<header class="relative z-10 flex items-center justify-between px-10 py-6">
+<div class="flex items-center gap-3">
+<div class="size-8 flex items-center justify-center rounded-lg bg-primary text-background-dark shadow-sm">
+<span class="material-symbols-outlined text-[20px]">family_history</span>
+</div>
+<h2 class="text-forest-dark dark:text-white text-xl font-bold tracking-tight">FamilyTree</h2>
+</div>
+<a class="text-sm font-medium text-sage-text hover:text-primary transition-colors" href="#">帮助</a>
+</header>
+<main class="relative z-10 flex flex-1 items-center justify-center p-4">
+<div class="glass-card w-full max-w-[480px] rounded-2xl p-8 sm:p-10 transition-all duration-300">
+<div class="mb-8 text-center">
+<h1 class="text-forest-dark dark:text-white text-3xl font-bold tracking-tight mb-2">欢迎回来</h1>
+<p class="text-sage-text dark:text-gray-400 text-sm">请输入您的详细信息以访问您的家族传承。</p>
+</div>
+<div class="mb-8 flex p-1 bg-gray-100 dark:bg-gray-800 rounded-xl">
+<button class="flex-1 rounded-lg bg-white dark:bg-gray-700 shadow-sm py-2 text-sm font-semibold text-forest-dark dark:text-white transition-all">
+                        登录
+                    </button>
+<button class="flex-1 rounded-lg bg-transparent py-2 text-sm font-medium text-sage-text hover:text-forest-dark dark:text-gray-400 dark:hover:text-white transition-all">
+                        注册
+                    </button>
+</div>
+<form class="flex flex-col gap-5">
+<label class="flex flex-col gap-1.5">
+<span class="text-sm font-medium text-forest-dark dark:text-gray-200">电子邮箱</span>
+<div class="relative">
+<input class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 px-4 py-3 text-base text-forest-dark dark:text-white placeholder-sage-text focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all hover:bg-white dark:hover:bg-gray-800" placeholder="name@example.com" type="email"/>
+<span class="material-symbols-outlined absolute right-4 top-3.5 text-sage-text text-[20px]">mail</span>
+</div>
+</label>
+<label class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<span class="text-sm font-medium text-forest-dark dark:text-gray-200">密码</span>
+<a class="text-xs font-semibold text-primary hover:text-primary-hover hover:underline" href="#">忘记密码？</a>
+</div>
+<div class="relative">
+<input class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 px-4 py-3 text-base text-forest-dark dark:text-white placeholder-sage-text focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all hover:bg-white dark:hover:bg-gray-800" placeholder="请输入密码" type="password"/>
+<button class="absolute right-3 top-3 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" type="button">
+<span class="material-symbols-outlined text-sage-text text-[20px] block">visibility</span>
+</button>
+</div>
+</label>
+<button class="mt-2 w-full rounded-xl bg-primary py-3.5 text-base font-bold text-background-dark shadow-md shadow-primary/20 hover:bg-primary-hover hover:shadow-lg hover:shadow-primary/30 active:scale-[0.98] transition-all duration-200" type="button">
+                        立即登录
+                    </button>
+</form>
+<div class="relative my-8 flex items-center gap-4">
+<div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+<span class="text-xs font-medium text-sage-text uppercase tracking-wider">或者使用以下方式登录</span>
+<div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+</div>
+<div class="flex gap-4 justify-center">
+<button aria-label="Sign in with Google" class="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-forest-dark dark:text-white transition-transform hover:-translate-y-1 hover:shadow-md active:scale-95">
+<svg class="h-5 w-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+</button>
+<button aria-label="Sign in with Apple" class="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-forest-dark dark:text-white transition-transform hover:-translate-y-1 hover:shadow-md active:scale-95">
+<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74s2.57-1.13 4.2-1c.56.02 2.16.24 3.23 1.73-.02.04-1.95 1.09-1.97 4.31.02 3.45 2.94 4.61 3.06 4.68-.02.09-.47 1.58-1.57 3.14-.97 1.39-2.01 2.81-3.66 2.72.01 0 .01 0 0 0zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.17 2.45-2.4 4.34-3.74 4.25z"></path>
+</svg>
+</button>
+<button aria-label="Sign in with Facebook" class="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-[#1877F2] transition-transform hover:-translate-y-1 hover:shadow-md active:scale-95">
+<svg class="h-6 w-6 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.19795 21.5H13.198V13.4901H16.8021L17.198 9.50977H13.198V7.5C13.198 6.94772 13.6457 6.5 14.198 6.5H17.198V2.5H14.198C11.4365 2.5 9.19795 4.73858 9.19795 7.5V9.50977H7.19795L6.80206 13.4901H9.19795V21.5Z"></path>
+</svg>
+</button>
+</div>
+<p class="mt-8 text-center text-xs text-sage-text">
+                    注册即表示您同意我们的 
+                    <a class="underline decoration-sage-text/50 hover:text-forest-dark dark:hover:text-white" href="#">服务条款</a> 
+                    和 
+                    <a class="underline decoration-sage-text/50 hover:text-forest-dark dark:hover:text-white" href="#">隐私政策</a>。
+                </p>
+</div>
+</main>
+</div>
+</body></html>
