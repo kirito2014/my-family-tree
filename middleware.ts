@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { verifyToken } from './lib/session';
 
 // 不需要认证的路径
@@ -21,7 +20,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // 获取 token
-  const token = cookies().get('auth-token')?.value;
+  const token = request.cookies.get('auth-token')?.value;
 
   if (!token) {
     // 重定向到登录页面
@@ -33,13 +32,14 @@ export async function middleware(request: NextRequest) {
 
   if (!userId) {
     // 清除无效的 token
-    cookies().delete('auth-token');
-    // 重定向到登录页面
-    return NextResponse.redirect(new URL('/auth', request.url));
+    // 在重定向响应中删除cookie
+    const response = NextResponse.redirect(new URL('/auth', request.url));
+    response.cookies.delete('auth-token');
+    return response;
   }
 
   // 检查最后活动时间
-  const lastActivity = cookies().get('last-activity')?.value;
+  const lastActivity = request.cookies.get('last-activity')?.value;
   const now = Date.now();
 
   if (lastActivity) {
@@ -47,10 +47,11 @@ export async function middleware(request: NextRequest) {
     // 检查是否超时
     if (now - lastActivityTime > SESSION_TIMEOUT) {
       // 清除 token
-      cookies().delete('auth-token');
-      cookies().delete('last-activity');
-      // 重定向到登录页面
-      return NextResponse.redirect(new URL('/auth', request.url));
+      // 在重定向响应中删除cookies
+      const timeoutResponse = NextResponse.redirect(new URL('/auth', request.url));
+      timeoutResponse.cookies.delete('auth-token');
+      timeoutResponse.cookies.delete('last-activity');
+      return timeoutResponse;
     }
   }
 

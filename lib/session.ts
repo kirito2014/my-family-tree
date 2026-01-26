@@ -1,3 +1,5 @@
+'use server';
+
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { PrismaClient } from '@prisma/client';
@@ -49,6 +51,8 @@ export async function createSession(userId: string, username: string) {
     maxAge: SESSION_EXPIRY / 1000,
     path: '/',
   });
+  
+  return { success: true, token };
 }
 
 export async function verifySession() {
@@ -81,6 +85,7 @@ export async function getCurrentUser() {
   }
 }
 
-export function destroySession() {
+export async function destroySession() {
   cookies().delete('session');
+  return { success: true };
 }
