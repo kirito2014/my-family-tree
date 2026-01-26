@@ -59,8 +59,8 @@ export const FamilyOnboarding = ({}: FamilyOnboardingProps) => {
               </div>
               <h2 className="text-forest-dark dark:text-white text-xl font-bold tracking-tight">FamilyTree</h2>
             </div>
-            <div className="flex items-center gap-4">
-              <a className="text-sm font-medium text-sage-text hover:text-primary transition-colors" href="#">帮助</a>
+            <div className="flex items-center gap-3">
+              {/* 进入设置按钮 */}
               <button
                 onClick={() => router.push('/settings')}
                 className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"

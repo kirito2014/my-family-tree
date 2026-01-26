@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCurrentUser, updateUserProfile, uploadAvatar } from '@/app/actions/auth';
+import { getCurrentUser, updateUserProfile, uploadAvatar, logout } from '@/app/actions/auth';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -37,6 +38,9 @@ const SettingsPage = () => {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
   
+  // 确认modal状态
+  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  
   // 加载用户信息
   useEffect(() => {
     const loadUser = async () => {
@@ -67,10 +71,17 @@ const SettingsPage = () => {
   }, []);
 
   const handleLogout = () => {
-    if (confirm('确定要退出登录吗？')) {
-      // 这里应该调用登出API
-      router.push('/auth');
-    }
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmLogout = async () => {
+    setShowConfirmModal(false);
+    await logout();
+    router.push('/auth');
+  };
+
+  const handleCancelLogout = () => {
+    setShowConfirmModal(false);
   };
   
   // 处理表单输入变化
@@ -213,18 +224,7 @@ const SettingsPage = () => {
               </button>
             </nav>
 
-            {/* 退出登录按钮 */}
-            <div className="mt-auto pt-6">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-red-50 text-red-600 transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                <span className="text-base">退出登录</span>
-              </button>
-            </div>
+
           </div>
         </aside>
 
@@ -232,10 +232,38 @@ const SettingsPage = () => {
         <main className="flex-1 p-6 bg-gray-50">
           {activeTab === 'profile' && (
             <div className="space-y-8">
-              {/* 页面标题 */}
-              <div className="flex flex-col gap-2">
-                <h1 className="text-2xl md:text-3xl font-bold leading-tight tracking-[-0.033em]">个人设置</h1>
-                <p className="text-sage-text text-sm font-normal leading-normal">更新您的个人信息以及您在家族树中的显示方式。</p>
+              {/* 页面标题和操作按钮 */}
+              <div className="flex justify-between items-center">
+                {/* 页面标题 */}
+                <div className="flex flex-col gap-2">
+                  <h1 className="text-2xl md:text-3xl font-bold leading-tight tracking-[-0.033em]">个人设置</h1>
+                  <p className="text-sage-text text-sm font-normal leading-normal">更新您的个人信息以及您在家族树中的显示方式。</p>
+                </div>
+                
+                {/* 操作按钮 */}
+                <div className="flex items-center gap-3">
+                  {/* 新按钮1 */}
+                  <button
+                    onClick={() => router.push('/')}
+                    className="w-9 h-9 rounded-full bg-green-500/80 text-white flex items-center justify-center hover:bg-green-600/80 transition-colors"
+                    title="返回主页"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                  </button>
+                  
+                  {/* 新按钮2 */}
+                  <button
+                    onClick={handleLogout}
+                    className="w-9 h-9 rounded-full bg-red-500/80 text-white flex items-center justify-center hover:bg-red-600/80 transition-colors"
+                    title="退出登录"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               {/* 个人资料卡片 */}
@@ -438,6 +466,17 @@ const SettingsPage = () => {
           )}
         </main>
       </div>
+      
+      {/* 确认modal */}
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        title="退出登录"
+        message="是否退出登录"
+        confirmText="确认"
+        cancelText="取消"
+        onConfirm={handleConfirmLogout}
+        onCancel={handleCancelLogout}
+      />
     </div>
   );
 };

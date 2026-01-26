@@ -187,7 +187,7 @@ export async function login(input: LoginInput) {
 export async function logout() {
   // 清除 Cookie
   cookies().delete('auth-token');
-  destroySession();
+  cookies().delete('last-activity');
   return { success: true };
 }
 
