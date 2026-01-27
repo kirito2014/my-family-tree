@@ -326,7 +326,20 @@ export async function login(input: LoginInput) {
     path: '/',
   });
 
-  return { success: true };
+  // 检查用户是否有家族（创建的或加入的）
+  const userWithFamilies = await prisma.user.findUnique({
+    where: { id: user.id },
+    include: {
+      createdFamilies: true,
+      familyMemberships: true
+    }
+  });
+
+  // 确定重定向路径
+  const hasFamilies = userWithFamilies?.createdFamilies.length > 0 || userWithFamilies?.familyMemberships.length > 0;
+  const redirectTo = hasFamilies ? '/family' : '/';
+
+  return { success: true, redirectTo };
 }
 
 export async function logout() {

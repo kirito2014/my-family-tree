@@ -181,7 +181,7 @@ export const AuthForm = () => {
           // 登录成功后清理表单
           setUsername('');
           setPassword('');
-          router.push('/');
+          router.push(result.redirectTo || '/');
         }
       }
     } catch (err) {

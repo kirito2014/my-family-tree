@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { createFamily } from '@/app/actions/auth';
 import { useRouter } from 'next/navigation';
-import { BadgeCheck, MessageSquareQuote, Globe, ChevronDown, ArrowRight } from 'lucide-react';
+import { BadgeCheck, MessageSquareQuote, Globe, ChevronDown, ArrowRight, Users, Home } from 'lucide-react';
 
 export default function CreateFamilyPage() {
   const [familyName, setFamilyName] = useState('');
@@ -11,6 +11,8 @@ export default function CreateFamilyPage() {
   const [region, setRegion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [createdFamilyId, setCreatedFamilyId] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,14 +24,26 @@ export default function CreateFamilyPage() {
       const result = await createFamily(familyName, motto, region);
       if (result.error) {
         setError(result.error);
-      } else if (result.success) {
-        // 创建成功后重定向到家族页面
-        router.push('/family');
+      } else if (result.success && result.family) {
+        // 创建成功后显示modal
+        setCreatedFamilyId(result.family.id);
+        setShowModal(true);
       }
     } catch (err) {
       setError('创建家族失败，请重试');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleModalAction = (addMembers: boolean) => {
+    setShowModal(false);
+    if (addMembers && createdFamilyId) {
+      // 跳转到tree页面添加成员
+      router.push(`/family/${createdFamilyId}/tree`);
+    } else {
+      // 跳转到家族列表页面
+      router.push('/family');
     }
   };
 
@@ -176,6 +190,39 @@ export default function CreateFamilyPage() {
           </div>
         </div>
       </main>
+
+      {/* Success Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
+                <BadgeCheck className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">家族创建成功！</h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                您的家族已经成功创建，现在您可以选择立即添加家族成员或稍后再添加。
+              </p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => handleModalAction(true)}
+                className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+              >
+                <Users className="w-5 h-5" />
+                <span>立即添加成员</span>
+              </button>
+              <button
+                onClick={() => handleModalAction(false)}
+                className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+              >
+                <Home className="w-5 h-5" />
+                <span>稍后添加，进入家族</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
