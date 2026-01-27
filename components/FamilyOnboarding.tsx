@@ -145,7 +145,7 @@ export default function FamilyOnboarding() {
                 className="group relative flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 text-center overflow-hidden aspect-[1.2/1]"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#80ec13]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 backdrop-blur-sm">
+                <div className="w-24 h-24 bg-[#f7f8f6] rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <UserPlus size={40} className="text-[#80ec13]" />
                 </div>
                 <h2 className="text-2xl font-bold text-[#141811] mb-3">创建新家族</h2>

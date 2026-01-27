@@ -82,7 +82,7 @@ export async function register(input: RegisterInput) {
   return { success: true };
 }
 
-export async function createFamily(familyName: string) {
+export async function createFamily(familyName: string, motto?: string, region?: string) {
   try {
     const session = await verifySession();
     if (!session.success) {
@@ -94,12 +94,24 @@ export async function createFamily(familyName: string) {
       return { error: '家庭名称不能为空' };
     }
 
+    // 生成 TREE-XXXX-XXXX 格式的 shareCode
+const generateShareCode = function (): string {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      const part1 = Array(4).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
+      const part2 = Array(4).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
+      return `TREE-${part1}-${part2}`;
+    }
+
+    const shareCode = generateShareCode();
+
     // 创建家庭
     const family = await prisma.family.create({
       data: {
         name: familyName.trim(),
+        motto: motto?.trim(),
+        description: region, // 使用 region 作为 description
         creatorId: session.user.id,
-        shareCode: `FAM-${Math.random().toString(36).substring(2, 8).toUpperCase()}`, // 生成邀请码
+        shareCode: shareCode,
       },
       include: {
         creator: {

@@ -48,6 +48,7 @@ model Family {
   id          String   @id @default(cuid())
   name        String
   description String?
+  motto       String?
   shareCode   String?  @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -65,7 +66,7 @@ model FamilyUser {
   roleId    String
   joinedAt  DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
-  family    Family   @relation(fields: [familyId], references: [id])
+  family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
   role      Role     @relation(fields: [roleId], references: [id])
   @@unique([userId, familyId])
 }
