@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { PrismaClient } from '@prisma/client';
 import { getCurrentUser, updateUserProfile, uploadAvatar, logout } from '@/app/actions/auth';
 import ConfirmModal from '@/components/ConfirmModal';
+
+const prisma = new PrismaClient();
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -82,6 +85,30 @@ const SettingsPage = () => {
 
   const handleCancelLogout = () => {
     setShowConfirmModal(false);
+  };
+
+  const handleGoHome = async () => {
+    try {
+      // 获取当前用户信息
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+        // 检查用户是否有家族
+        const response = await fetch('/api/families', { credentials: 'include' });
+        if (response.ok) {
+          const data = await response.json();
+          const hasFamilies = data.families && data.families.length > 0;
+          router.push(hasFamilies ? '/family' : '/onboard');
+        } else {
+          // 如果 API 调用失败，默认导航到 onboard
+          router.push('/onboard');
+        }
+      } else {
+        router.push('/onboard');
+      }
+    } catch (error) {
+      console.error('获取用户信息失败:', error);
+      router.push('/onboard');
+    }
   };
   
   // 处理表单输入变化
@@ -169,7 +196,7 @@ const SettingsPage = () => {
           <div className="flex items-center gap-3">
             {/* 返回主页按钮 */}
             <button
-              onClick={() => router.push('/')}
+              onClick={handleGoHome}
               className="w-9 h-9 rounded-full bg-white shadow-sm text-green-600 flex items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
               title="返回主页"
             >

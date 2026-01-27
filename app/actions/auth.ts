@@ -336,8 +336,8 @@ export async function login(input: LoginInput) {
   });
 
   // 确定重定向路径
-  const hasFamilies = userWithFamilies?.createdFamilies.length > 0 || userWithFamilies?.familyMemberships.length > 0;
-  const redirectTo = hasFamilies ? '/family' : '/';
+  const hasFamilies = (userWithFamilies?.createdFamilies?.length || 0) > 0 || (userWithFamilies?.familyMemberships?.length || 0) > 0;
+  const redirectTo = hasFamilies ? '/family' : '/onboard';
 
   return { success: true, redirectTo };
 }

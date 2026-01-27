@@ -188,6 +188,7 @@ export default function FamilyPage() {
                           <Copy size={16} className="text-[#5c6f4b] hover:text-[#80ec13]" />
                         </button>
                         <button
+                          onClick={() => router.push(`/family/${family.id}/tree`)}
                           className="p-2 rounded-full hover:bg-gray-100 transition-colors"
                           title="查看家族树"
                         >

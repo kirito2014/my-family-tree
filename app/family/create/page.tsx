@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { createFamily } from '@/app/actions/auth';
+import { useState, useEffect } from 'react';
+import { createFamily, getCurrentUser } from '@/app/actions/auth';
 import { useRouter } from 'next/navigation';
 import { BadgeCheck, MessageSquareQuote, Globe, ChevronDown, ArrowRight, Users, Home } from 'lucide-react';
 
@@ -13,7 +13,31 @@ export default function CreateFamilyPage() {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [createdFamilyId, setCreatedFamilyId] = useState<string | null>(null);
+  const [hasFamilies, setHasFamilies] = useState<boolean>(false);
+  const [checkingFamilies, setCheckingFamilies] = useState<boolean>(true);
   const router = useRouter();
+
+  useEffect(() => {
+    const checkUserFamilies = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        if (currentUser) {
+          // 检查用户是否有家族
+          const response = await fetch('/api/families', { credentials: 'include' });
+          if (response.ok) {
+            const data = await response.json();
+            setHasFamilies(data.families && data.families.length > 0);
+          }
+        }
+      } catch (error) {
+        console.error('检查用户家族失败:', error);
+      } finally {
+        setCheckingFamilies(false);
+      }
+    };
+
+    checkUserFamilies();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,13 +83,20 @@ export default function CreateFamilyPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-10 py-5 w-full">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center size-10 bg-primary/20 rounded-xl text-primary-dark">
-            <img src="/favicon.ico" alt="Logo" className="w-8 h-8" />
+          <div className="p-2 bg-transparent rounded-lg shadow-md">
+            <img src="/favicon.ico" alt="Logo" className="h-6 w-6" />
           </div>
           <h2 className="text-xl font-bold tracking-tight text-[#141811] dark:text-white">Ancestry Roots</h2>
         </div>
         <div className="flex items-center gap-6">
           <a className="text-sm font-medium text-[#141811]/70 dark:text-white/70 hover:text-[#141811] dark:hover:text-white" href="#">帮助</a>
+          <a className="text-sm font-medium text-[#141811]/70 dark:text-white/70 hover:text-[#141811] dark:hover:text-white flex items-center gap-1" href="/settings">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span>设置</span>
+          </a>
           {/* User avatar will be added here */}
         </div>
       </header>
@@ -175,9 +206,18 @@ export default function CreateFamilyPage() {
                   </>
                 )}
               </button>
-              <a className="text-center text-sm font-medium text-[#5c6f4b] dark:text-gray-400 hover:text-[#141811] dark:hover:text-white transition-colors" href="/">
+              <button
+                onClick={() => {
+                  if (hasFamilies) {
+                    router.push('/family');
+                  } else {
+                    router.push('/onboard');
+                  }
+                }}
+                className="text-center text-sm font-medium text-[#5c6f4b] dark:text-gray-400 hover:text-[#141811] dark:hover:text-white transition-colors w-full bg-transparent border-none cursor-pointer py-2"
+              >
                 取消并返回
-              </a>
+              </button>
             </div>
           </form>
         </div>
