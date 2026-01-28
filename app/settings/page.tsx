@@ -34,10 +34,13 @@ const SettingsPage = () => {
       try {
         const result = await getUnreadNotificationCount();
         if (!result.error) {
-          setUnreadCount(result.count);
+          setUnreadCount(result.count || 0);
+        } else {
+          setUnreadCount(0);
         }
       } catch (error) {
         console.error('加载未读通知数失败:', error);
+        setUnreadCount(0);
       }
     };
     

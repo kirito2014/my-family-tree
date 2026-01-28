@@ -56,12 +56,12 @@ export async function createSession(userId: string, username: string) {
 }
 
 export async function verifySession() {
-  const session = cookies().get('session')?.value;
-  if (!session) return null;
+  const token = cookies().get('auth-token')?.value;
+  if (!token) return null;
 
   try {
     const { payload } = await jwtVerify(
-      session,
+      token,
       new TextEncoder().encode(SECRET_KEY)
     );
     return payload as UserPayload;

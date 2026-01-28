@@ -6,14 +6,14 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   const session = await verifySession();
-  if (!session.success) {
+  if (!session) {
     return NextResponse.json({ error: '未授权' }, { status: 401 });
   }
 
   try {
     const notifications = await prisma.notification.findMany({
       where: {
-        recipientId: session.user.id
+        recipientId: session.userId
       },
       include: {
         sender: {
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const session = await verifySession();
-  if (!session.success) {
+  if (!session) {
     return NextResponse.json({ error: '未授权' }, { status: 401 });
   }
 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     const notification = await prisma.notification.create({
       data: {
         recipientId,
-        senderId: session.user.id,
+        senderId: session.userId,
         title,
         content,
         type,

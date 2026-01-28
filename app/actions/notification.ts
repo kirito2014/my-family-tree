@@ -8,13 +8,13 @@ const prisma = new PrismaClient();
 export async function getNotifications() {
   try {
     const session = await verifySession();
-    if (!session.success) {
+    if (!session) {
       return { error: '未授权' };
     }
 
     const notifications = await prisma.notification.findMany({
       where: {
-        recipientId: session.user.id
+        recipientId: session.userId
       },
       include: {
         sender: {
@@ -48,13 +48,13 @@ export async function getNotifications() {
 export async function getUnreadNotificationCount() {
   try {
     const session = await verifySession();
-    if (!session.success) {
+    if (!session) {
       return { error: '未授权' };
     }
 
     const count = await prisma.notification.count({
       where: {
-        recipientId: session.user.id,
+        recipientId: session.userId,
         isRead: false
       }
     });
@@ -69,14 +69,14 @@ export async function getUnreadNotificationCount() {
 export async function markNotificationAsRead(notificationId: string) {
   try {
     const session = await verifySession();
-    if (!session.success) {
+    if (!session) {
       return { error: '未授权' };
     }
 
     const notification = await prisma.notification.findFirst({
       where: {
         id: notificationId,
-        recipientId: session.user.id
+        recipientId: session.userId
       }
     });
 
@@ -109,14 +109,14 @@ export async function createNotification(data: {
 }) {
   try {
     const session = await verifySession();
-    if (!session.success) {
+    if (!session) {
       return { error: '未授权' };
     }
 
     const notification = await prisma.notification.create({
       data: {
         ...data,
-        senderId: session.user.id
+        senderId: session.userId
       }
     });
 

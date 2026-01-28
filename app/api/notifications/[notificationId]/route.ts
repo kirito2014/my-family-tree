@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function PATCH(request: NextRequest, { params }: { params: { notificationId: string } }) {
   const session = await verifySession();
-  if (!session.success) {
+  if (!session) {
     return NextResponse.json({ error: '未授权' }, { status: 401 });
   }
 
@@ -16,7 +16,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { notifi
     const notification = await prisma.notification.findFirst({
       where: {
         id: notificationId,
-        recipientId: session.user.id
+        recipientId: session.userId
       }
     });
 

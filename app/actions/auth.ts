@@ -1,10 +1,12 @@
 'use server';
 
+import { Prisma, PrismaClient } from '@prisma/client';
 import { createNotification } from './notification';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { generateToken, verifyToken, destroySession } from '@/lib/session';
+import { generateToken, verifyToken, createSession, destroySession } from '@/lib/session';
+import { jwtVerify } from 'jose';
 
 const prisma = new PrismaClient();
 
@@ -85,7 +87,7 @@ export async function register(input: RegisterInput) {
 export async function createFamily(familyName: string, motto?: string, region?: string) {
   try {
     const session = await verifySession();
-    if (!session.success) {
+    if (!session) {
       return { error: '未登录' };
     }
 
@@ -110,7 +112,7 @@ const generateShareCode = function (): string {
         name: familyName.trim(),
         motto: motto?.trim(),
         location: region,
-        creatorId: session.user.id,
+        creatorId: session.userId,
         shareCode: shareCode,
       },
       include: {
@@ -145,7 +147,7 @@ const generateShareCode = function (): string {
 
     await prisma.familyUser.create({
       data: {
-        userId: session.user.id,
+        userId: session.userId,
         familyId: family.id,
         roleId: roleId
       }
@@ -161,7 +163,7 @@ const generateShareCode = function (): string {
 export async function joinFamily(inviteCode: string) {
   try {
     const session = await verifySession();
-    if (!session.success) {
+    if (!session) {
       return { error: '未登录' };
     }
 
@@ -184,7 +186,7 @@ export async function joinFamily(inviteCode: string) {
     // 检查用户是否已经是该家庭的成员
     const existingMembership = await prisma.familyUser.findFirst({
       where: {
-        userId: session.user.id,
+        userId: session.userId,
         familyId: family.id
       }
     });
@@ -214,7 +216,7 @@ export async function joinFamily(inviteCode: string) {
     // 创建家庭成员关系
     await prisma.familyUser.create({
       data: {
-        userId: session.user.id,
+        userId: session.userId,
         familyId: family.id,
         roleId: roleId
       }
@@ -367,52 +369,47 @@ export async function verifySession() {
   const token = cookies().get('auth-token')?.value;
 
   if (!token) {
-    return { error: '未授权' };
+    return null;
   }
 
   try {
-    const userId = await verifyToken(token);
+    const encoder = new TextEncoder();
+    const secretKey = encoder.encode(process.env.SESSION_SECRET || 'your-secret-key-here');
     
-    if (!userId) {
-      return { error: '无效的令牌' };
-    }
+    const { payload } = await jwtVerify(
+      token,
+      secretKey
+    );
     
-    // 查找用户
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      return { error: '用户不存在' };
-    }
-
-    return { success: true, user };
-  } catch (error) {
-    return { error: '无效的令牌' };
+    return payload as { userId: string; username: string; [key: string]: any };
+  } catch {
+    return null;
   }
 }
 
 export async function getCurrentUser() {
   const session = await verifySession();
-  if (session.success) {
-    // 重新查询用户，获取更多信息
+  if (!session) return null;
+
+  try {
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: {
-        id: true,
-        username: true,
-        name: true,
+      where: { id: session.userId },
+      select: { 
+        id: true, 
+        username: true, 
+        name: true, 
+        email: true, 
+        avatar: true,
         nickname: true,
-        email: true,
         phone: true,
         location: true,
-        avatar: true,
-        bio: true,
+        bio: true
       },
     });
     return user;
+  } catch {
+    return null;
   }
-  return null;
 }
 
 export async function updateUserProfile(data: {
@@ -426,12 +423,12 @@ export async function updateUserProfile(data: {
   }) {
   try {
     const session = await verifySession();
-    if (!session.success) {
+    if (!session) {
       throw new Error('未登录');
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: session.userId },
       data,
       select: {
         id: true,
@@ -456,12 +453,12 @@ export async function updateUserProfile(data: {
 export async function uploadAvatar(avatar: string) {
   try {
     const session = await verifySession();
-    if (!session.success) {
+    if (!session) {
       throw new Error('未登录');
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: session.userId },
       data: { avatar },
       select: {
         id: true,
