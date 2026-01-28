@@ -24,6 +24,8 @@ model User {
   updatedAt     DateTime  @updatedAt
   familyMemberships FamilyUser[]
   createdFamilies   Family[]     @relation("FamilyCreator")
+  sentNotifications Notification[]    @relation("Sender")
+  receivedNotifications Notification[]  @relation("Recipient")
 }
 
 model Role {
@@ -59,6 +61,7 @@ model Family {
   connections Connection[]
   avatar      String?
   location    String?
+  notifications Notification[]
 }
 
 model FamilyUser {
@@ -106,4 +109,20 @@ model Connection {
   updatedAt   DateTime @updatedAt
   fromMember  Member   @relation("FromMember", fields: [fromId], references: [id], onDelete: Cascade)
   toMember    Member   @relation("ToMember", fields: [toId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  type        String
+  title       String
+  content     String
+  recipientId String
+  senderId    String?
+  familyId    String?
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  recipient   User     @relation("Recipient", fields: [recipientId], references: [id])
+  sender      User?    @relation("Sender", fields: [senderId], references: [id])
+  family      Family?  @relation(fields: [familyId], references: [id])
 }

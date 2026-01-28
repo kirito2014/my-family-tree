@@ -1,6 +1,6 @@
 'use server';
 
-import { PrismaClient } from '@prisma/client';
+import { createNotification } from './notification';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -124,20 +124,20 @@ const generateShareCode = function (): string {
       }
     });
 
-    // 自动将创建者添加为家庭成员（通常是管理员角色）
-    const adminRole = await prisma.role.findFirst({
-      where: { name: 'admin' }
+    // 自动将创建者添加为家庭成员，分配创建者权限
+    const creatorRole = await prisma.role.findFirst({
+      where: { name: 'creator' }
     });
 
-    // 如果没有管理员角色，则查找或创建默认角色
-    let roleId = adminRole?.id;
+    // 如果没有创建者角色，则查找或创建默认角色
+    let roleId = creatorRole?.id;
     if (!roleId) {
       const defaultRole = await prisma.role.upsert({
-        where: { name: 'member' },
+        where: { name: 'creator' },
         update: {},
         create: {
-          name: 'member',
-          description: '普通成员'
+          name: 'creator',
+          description: '创建者 - 拥有全部权限'
         }
       });
       roleId = defaultRole.id;
@@ -193,19 +193,19 @@ export async function joinFamily(inviteCode: string) {
       return { error: '您已经是该家庭的成员' };
     }
 
-    // 获取默认角色（通常为普通成员）
-    const memberRole = await prisma.role.findFirst({
-      where: { name: 'member' }
+    // 获取默认角色（观察者）
+    const observerRole = await prisma.role.findFirst({
+      where: { name: 'observer' }
     });
 
-    let roleId = memberRole?.id;
+    let roleId = observerRole?.id;
     if (!roleId) {
       const defaultRole = await prisma.role.upsert({
-        where: { name: 'member' },
+        where: { name: 'observer' },
         update: {},
         create: {
-          name: 'member',
-          description: '普通成员'
+          name: 'observer',
+          description: '观察者 - 仅可以查看家族成员信息'
         }
       });
       roleId = defaultRole.id;
@@ -219,6 +219,20 @@ export async function joinFamily(inviteCode: string) {
         roleId: roleId
       }
     });
+
+    // 发送通知给家族创建者
+    try {
+      await createNotification({
+        recipientId: family.creatorId,
+        title: '新成员加入',
+        content: `新成员通过邀请码加入了家族 ${family.name}，当前权限为观察者。`,
+        type: 'member_join',
+        familyId: family.id
+      });
+    } catch (error) {
+      console.error('发送通知失败:', error);
+      // 通知发送失败不影响加入流程
+    }
 
     return { success: true, family: { id: family.id, name: family.name } };
   } catch (error) {

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PrismaClient } from '@prisma/client';
 import { getCurrentUser, updateUserProfile, uploadAvatar, logout } from '@/app/actions/auth';
+import { getNotifications, getUnreadNotificationCount, markNotificationAsRead, createNotification } from '@/app/actions/notification';
 import ConfirmModal from '@/components/ConfirmModal';
 
 const prisma = new PrismaClient();
@@ -12,13 +13,35 @@ const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const router = useRouter();
   
+  // 通知相关状态
+  const [showNotificationModal, setShowNotificationModal] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [notificationsLoading, setNotificationsLoading] = useState<boolean>(false);
+  
   // 从URL参数获取默认选中的标签页
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tab = urlParams.get('tab');
-    if (tab && ['profile', 'family', 'tree', 'system'].includes(tab)) {
+    if (tab && ['profile', 'family', 'tree', 'system', 'permissions'].includes(tab)) {
       setActiveTab(tab);
     }
+  }, []);
+  
+  // 加载未读通知数
+  useEffect(() => {
+    const loadUnreadCount = async () => {
+      try {
+        const result = await getUnreadNotificationCount();
+        if (!result.error) {
+          setUnreadCount(result.count);
+        }
+      } catch (error) {
+        console.error('加载未读通知数失败:', error);
+      }
+    };
+    
+    loadUnreadCount();
   }, []);
   
   // 用户信息状态
@@ -125,6 +148,61 @@ const SettingsPage = () => {
     
     loadFamilies();
   }, [activeTab]);
+
+  // 加载通知
+  const loadNotifications = async () => {
+    setNotificationsLoading(true);
+    try {
+      const result = await getNotifications();
+      if (!result.error) {
+        setNotifications(result.notifications);
+        // 更新未读计数
+        const unread = result.notifications.filter((n: any) => !n.isRead).length;
+        setUnreadCount(unread);
+      }
+    } catch (error) {
+      console.error('加载通知失败:', error);
+    } finally {
+      setNotificationsLoading(false);
+    }
+  };
+
+  // 打开通知模态框
+  const handleOpenNotifications = () => {
+    loadNotifications();
+    setShowNotificationModal(true);
+  };
+
+  // 标记通知为已读
+  const handleMarkAsRead = async (notificationId: string) => {
+    try {
+      await markNotificationAsRead(notificationId);
+      // 更新本地状态
+      setNotifications(prev => prev.map(n => 
+        n.id === notificationId ? { ...n, isRead: true } : n
+      ));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('标记通知为已读失败:', error);
+    }
+  };
+
+  // 申请权限提升
+  const handleRequestPermission = async (family: any) => {
+    try {
+      await createNotification({
+        recipientId: family.creatorId,
+        title: '权限提升申请',
+        content: `${user?.name || user?.username} 申请提升在家族 ${family.name} 中的权限级别，请审核。`,
+        type: 'permission_request',
+        familyId: family.id
+      });
+      alert('权限申请已发送，等待创建者审核');
+    } catch (error) {
+      console.error('发送权限申请失败:', error);
+      alert('发送权限申请失败');
+    }
+  };
 
   const handleLogout = () => {
     setShowConfirmModal(true);
@@ -400,6 +478,24 @@ const SettingsPage = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* 通知按钮 */}
+            <div className="relative">
+              <button
+                onClick={handleOpenNotifications}
+                className="w-9 h-9 rounded-full bg-white shadow-sm text-gray-700 flex items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200 relative"
+                title="通知"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            </div>
+            
             {/* 返回主页按钮 */}
             <button
               onClick={handleGoHome}
@@ -470,6 +566,16 @@ const SettingsPage = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <span className="text-base">系统设置</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('permissions')}
+                className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-colors ${activeTab === 'permissions' ? 'bg-green-50 text-green-600' : 'hover:bg-gray-50 text-gray-700'}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span className="text-base">权限管理</span>
               </button>
             </nav>
 
@@ -787,6 +893,14 @@ const SettingsPage = () => {
                           
                           {/* 操作栏 */}
                           <div className="flex items-center gap-2">
+                            {family.role?.name === 'observer' && (
+                              <button 
+                                onClick={() => handleRequestPermission(family)}
+                                className="h-8 px-3 rounded-xl bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 transition-colors text-xs"
+                              >
+                                申请更高权限
+                              </button>
+                            )}
                             <button 
                               className="h-8 px-3 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-xs"
                             >
@@ -827,6 +941,164 @@ const SettingsPage = () => {
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">系统设置</h2>
               <p>系统设置内容将在此显示</p>
+            </div>
+          )}
+          
+          {activeTab === 'permissions' && (
+            <div className="space-y-8">
+              {/* 页面标题 */}
+              <div className="flex flex-col gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold leading-tight tracking-[-0.033em]">权限管理</h1>
+                <p className="text-sage-text text-sm font-normal leading-normal">管理家族成员的权限级别和访问权限</p>
+              </div>
+
+              {/* 权限类别卡片 */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {/* 观察者权限 */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900">观察者</h3>
+                  </div>
+                  <p className="text-gray-500 text-sm mb-4">只能查看家族成员信息，无法进行任何修改操作</p>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">查看家族成员</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 bg-gray-100"></div>
+                      <span className="text-sm text-gray-500">管理家族成员</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 bg-gray-100"></div>
+                      <span className="text-sm text-gray-500">编辑家族信息</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 bg-gray-100"></div>
+                      <span className="text-sm text-gray-500">删除家族</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 参与者权限 */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 01-9.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900">参与者</h3>
+                  </div>
+                  <p className="text-gray-500 text-sm mb-4">可以查看和管理家族成员，参与家族活动</p>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">查看家族成员</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">管理家族成员</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">编辑家族信息</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 bg-gray-100"></div>
+                      <span className="text-sm text-gray-500">删除家族</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 创造者权限 */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900">创造者</h3>
+                  </div>
+                  <p className="text-gray-500 text-sm mb-4">拥有家族的所有权限，包括管理和删除权限</p>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-purple-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">查看家族成员</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-purple-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">管理家族成员</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-purple-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">编辑家族信息</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-purple-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">删除家族</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 权限说明 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                <h3 className="text-lg font-bold text-gray-900 mb-3">权限说明</h3>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">•</span>
+                    <span>观察者：适合只想了解家族历史的成员，只能查看信息</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">•</span>
+                    <span>参与者：适合积极参与家族管理的成员，可以管理成员和编辑信息</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">•</span>
+                    <span>创造者：家族的创建者，拥有最高权限，包括删除家族的权利</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           )}
         </main>
@@ -957,6 +1229,68 @@ const SettingsPage = () => {
                 className="px-6 py-2.5 rounded-2xl bg-white text-green-600 font-medium hover:bg-green-50 transition-colors border border-green-600"
               >
                 保存更改
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 通知模态框 */}
+      {showNotificationModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div 
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            onClick={() => setShowNotificationModal(false)}
+          ></div>
+          <div className="bg-white rounded-2xl shadow-lg z-50 w-full max-w-md max-h-[80vh] flex flex-col">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900">通知中心</h3>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6">
+              {notificationsLoading ? (
+                <div className="flex justify-center items-center h-40">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                </div>
+              ) : notifications.length === 0 ? (
+                <div className="text-center py-10">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  <p className="text-gray-500">暂时没有通知</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {notifications.map((notification) => (
+                    <div 
+                      key={notification.id}
+                      className={`p-4 rounded-xl border ${notification.isRead ? 'border-gray-200 bg-white' : 'border-green-200 bg-green-50'}`}
+                      onClick={() => !notification.isRead && handleMarkAsRead(notification.id)}
+                    >
+                      <div className="flex justify-between items-start">
+                        <h4 className="font-medium text-gray-900">{notification.title}</h4>
+                        <span className="text-xs text-gray-500">
+                          {new Date(notification.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{notification.content}</p>
+                      {notification.family && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                            家族: {notification.family.name}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="p-6 border-t border-gray-200">
+              <button 
+                onClick={() => setShowNotificationModal(false)}
+                className="w-full h-10 px-6 rounded-2xl bg-white border border-gray-300 text-gray-700 font-medium shadow-sm hover:bg-gray-50 transition-colors"
+              >
+                关闭
               </button>
             </div>
           </div>

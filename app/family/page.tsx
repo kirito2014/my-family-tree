@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PrismaClient } from '@prisma/client';
-import { TreeDeciduous, Users, Copy, ExternalLink, Trash2, ChevronRight } from 'lucide-react';
+import { TreeDeciduous, Users, Copy, ExternalLink, Trash2, ChevronRight, Bell } from 'lucide-react';
 import ConfirmModal from '@/components/ConfirmModal';
+import { getUnreadNotificationCount, createNotification } from '@/app/actions/notification';
 
 const prisma = new PrismaClient();
 
@@ -15,11 +16,29 @@ export default function FamilyPage() {
   const [copied, setCopied] = useState<string>('');
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [familyToDelete, setFamilyToDelete] = useState<string | null>(null);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
   const router = useRouter();
 
   useEffect(() => {
     fetchFamilies();
+    loadUnreadCount();
   }, []);
+
+  const loadUnreadCount = async () => {
+    try {
+      const response = await fetch('/api/notifications', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const unread = data.notifications.filter((n: any) => !n.isRead).length;
+        setUnreadCount(unread);
+      }
+    } catch (error) {
+      console.error('加载未读通知数失败:', error);
+    }
+  };
 
   const fetchFamilies = async () => {
     try {
@@ -85,6 +104,28 @@ export default function FamilyPage() {
     router.push('/family/create');
   };
 
+  // 申请权限提升
+  const handleRequestPermission = async (family: any) => {
+    try {
+      await createNotification({
+        recipientId: family.creatorId,
+        title: '权限提升申请',
+        content: `用户申请提升在家族 ${family.name} 中的权限级别，请审核。`,
+        type: 'permission_request',
+        familyId: family.id
+      });
+      alert('权限申请已发送，等待创建者审核');
+    } catch (error) {
+      console.error('发送权限申请失败:', error);
+      alert('发送权限申请失败');
+    }
+  };
+
+  // 打开通知中心
+  const handleOpenNotifications = () => {
+    router.push('/settings');
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f7f8f6]">
@@ -114,6 +155,21 @@ export default function FamilyPage() {
           <span>FamilyTree</span>
         </div>
         <div className="flex items-center gap-4">
+          {/* 通知按钮 */}
+          <div className="relative">
+            <button
+              onClick={handleOpenNotifications}
+              className="w-9 h-9 rounded-full bg-white shadow-sm text-gray-700 flex items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200 relative"
+              title="通知"
+            >
+              <Bell size={16} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+          </div>
           <button 
             onClick={() => router.push('/settings')}
             className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-[#141811] font-bold shadow-sm hover:shadow-md transition-all active:scale-95 border border-gray-100"
@@ -239,13 +295,23 @@ export default function FamilyPage() {
                           <span className="text-xs text-green-500">已复制！</span>
                         )}
                       </div>
-                      <button 
-                      onClick={() => router.push('/settings?tab=family')}
-                      className="flex items-center gap-1 text-sm font-medium text-[#80ec13] hover:text-[#72d411] transition-colors"
-                    >
-                      管理家族
-                      <ChevronRight size={16} />
-                    </button>
+                      <div className="flex items-center gap-2">
+                        {family.role?.name === 'observer' && (
+                          <button 
+                            onClick={() => handleRequestPermission(family)}
+                            className="h-8 px-3 rounded-xl bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 transition-colors text-xs"
+                          >
+                            申请更高权限
+                          </button>
+                        )}
+                        <button 
+                        onClick={() => router.push('/settings?tab=family')}
+                        className="flex items-center gap-1 text-sm font-medium text-[#80ec13] hover:text-[#72d411] transition-colors"
+                      >
+                        管理家族
+                        <ChevronRight size={16} />
+                      </button>
+                      </div>
                     </div>
                   </div>
                 </div>
