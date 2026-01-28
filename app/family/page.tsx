@@ -239,10 +239,13 @@ export default function FamilyPage() {
                           <span className="text-xs text-green-500">已复制！</span>
                         )}
                       </div>
-                      <button className="flex items-center gap-1 text-sm font-medium text-[#80ec13] hover:text-[#72d411] transition-colors">
-                        管理家族
-                        <ChevronRight size={16} />
-                      </button>
+                      <button 
+                      onClick={() => router.push('/settings?tab=family')}
+                      className="flex items-center gap-1 text-sm font-medium text-[#80ec13] hover:text-[#72d411] transition-colors"
+                    >
+                      管理家族
+                      <ChevronRight size={16} />
+                    </button>
                     </div>
                   </div>
                 </div>

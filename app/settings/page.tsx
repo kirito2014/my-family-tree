@@ -12,6 +12,15 @@ const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const router = useRouter();
   
+  // 从URL参数获取默认选中的标签页
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tab = urlParams.get('tab');
+    if (tab && ['profile', 'family', 'tree', 'system'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, []);
+  
   // 用户信息状态
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -541,17 +550,19 @@ const SettingsPage = () => {
                     </div>
                   </div>
                   <div className="flex flex-col items-start w-full md:w-auto gap-2">
-                    <div className="flex items-center gap-1.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13 0a6 6 0 00-9 5.197" />
-                      </svg>
-                      <p className="text-gray-500 text-xs">已创建 0 个家族</p>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                      </svg>
-                      <p className="text-gray-500 text-xs">暂未关联任何家族</p>
+                    <div className="flex flex-col gap-1.5 items-start">
+                      <div className="flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13 0a6 6 0 00-9 5.197" />
+                        </svg>
+                        <p className="text-gray-500 text-xs">已创建 {families.filter(f => f.creatorId === user?.id).length} 个家族</p>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        <p className="text-gray-500 text-xs">已加入 {families.filter(f => f.creatorId !== user?.id).length} 个家族</p>
+                      </div>
                     </div>
                   </div>
                 </div>

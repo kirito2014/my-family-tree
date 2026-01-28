@@ -172,24 +172,15 @@ export default function CreateFamilyPage() {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-green-800 transition-colors">
                   <Globe size={18} />
                 </div>
-                <select 
-                  className="w-full appearance-none bg-white/80 dark:bg-white/5 border border-[#e0e6db] dark:border-white/10 text-[#141811] dark:text-white rounded-xl py-2.5 pl-10 pr-8 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all font-medium cursor-pointer text-sm" 
-                  id="region"
+                <input 
+                  className="w-full bg-white/80 dark:bg-white/5 border border-[#e0e6db] dark:border-white/10 text-[#141811] dark:text-white rounded-xl py-2.5 pl-10 pr-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500 font-medium text-sm" 
+                  id="region" 
+                  placeholder="例如：中国北京" 
+                  type="text"
                   value={region}
                   onChange={(e) => setRegion(e.target.value)}
                   required
-                >
-                  <option className="text-gray-400"  value="">选择地区</option>
-                  <option value="nam">北美洲</option>
-                  <option value="sam">南美洲</option>
-                  <option value="eu">欧洲</option>
-                  <option value="as">亚洲</option>
-                  <option value="af">非洲</option>
-                  <option value="oc">大洋洲</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
-                  <ChevronDown size={18} />
-                </div>
+                />
               </div>
             </div>
             

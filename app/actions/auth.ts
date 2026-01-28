@@ -109,7 +109,7 @@ const generateShareCode = function (): string {
       data: {
         name: familyName.trim(),
         motto: motto?.trim(),
-        description: region, // 使用 region 作为 description
+        location: region,
         creatorId: session.user.id,
         shareCode: shareCode,
       },
