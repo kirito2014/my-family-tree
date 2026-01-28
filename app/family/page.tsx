@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PrismaClient } from '@prisma/client';
 import { TreeDeciduous, Users, Copy, ExternalLink, Trash2, ChevronRight } from 'lucide-react';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const prisma = new PrismaClient();
 
@@ -12,6 +13,8 @@ export default function FamilyPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState<string>('');
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [familyToDelete, setFamilyToDelete] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -45,26 +48,37 @@ export default function FamilyPage() {
     setTimeout(() => setCopied(''), 2000);
   };
 
-  const handleDeleteFamily = async (familyId: string) => {
-    if (!confirm('确定要删除这个家族吗？此操作不可恢复。')) {
-      return;
-    }
+  const handleDeleteFamily = (familyId: string) => {
+    setFamilyToDelete(familyId);
+    setShowDeleteModal(true);
+  };
 
-    try {
-      const response = await fetch(`/api/families/${familyId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
+  const handleConfirmDeleteFamily = async () => {
+    if (familyToDelete) {
+      try {
+        const response = await fetch(`/api/families/${familyToDelete}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
 
-      if (!response.ok) {
-        throw new Error('删除家族失败');
+        if (!response.ok) {
+          throw new Error('删除家族失败');
+        }
+
+        fetchFamilies();
+      } catch (err) {
+        setError('删除家族失败，请重试');
+        console.error('Error deleting family:', err);
+      } finally {
+        setShowDeleteModal(false);
+        setFamilyToDelete(null);
       }
-
-      fetchFamilies();
-    } catch (err) {
-      setError('删除家族失败，请重试');
-      console.error('Error deleting family:', err);
     }
+  };
+
+  const handleCancelDeleteFamily = () => {
+    setShowDeleteModal(false);
+    setFamilyToDelete(null);
   };
 
   const handleCreateFamily = () => {
@@ -122,13 +136,22 @@ export default function FamilyPage() {
               <h1 className="text-3xl font-bold text-[#141811] mb-2">我的家族</h1>
               <p className="text-[#5c6f4b]">管理您创建的家族和加入的家族</p>
             </div>
-            <button
-              onClick={handleCreateFamily}
-              className="bg-[#80ec13] hover:bg-[#72d411] text-[#192210] font-bold py-3 px-6 rounded-xl shadow-lg shadow-[#80ec13]/20 flex items-center gap-2 transition-all active:scale-95"
-            >
-              <TreeDeciduous size={20} />
-              创建家族
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={handleCreateFamily}
+                className="bg-[#80ec13] hover:bg-[#72d411] text-[#192210] font-bold py-3 px-6 rounded-xl shadow-lg shadow-[#80ec13]/20 flex items-center gap-2 transition-all active:scale-95"
+              >
+                <TreeDeciduous size={20} />
+                创建家族
+              </button>
+              <button
+                onClick={() => router.push('/family/join')}
+                className="bg-white hover:bg-gray-50 text-[#192210] font-bold py-3 px-6 rounded-xl shadow-lg shadow-gray-200 flex items-center gap-2 transition-all active:scale-95 border border-gray-200"
+              >
+                <Users size={20} />
+                加入家族
+              </button>
+            </div>
           </div>
 
           {/* Error Message */}
@@ -165,7 +188,11 @@ export default function FamilyPage() {
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-[#f7f8f6] rounded-xl flex items-center justify-center">
-                          <TreeDeciduous size={24} className="text-[#80ec13]" />
+                          {family.avatar ? (
+                            <img src={family.avatar} alt={`${family.name} Avatar`} className="w-full h-full object-cover rounded-xl" />
+                          ) : (
+                            <Users size={24} className="text-[#80ec13]" />
+                          )}
                         </div>
                         <div>
                           <h3 className="text-xl font-bold text-[#141811] mb-1">{family.name}</h3>
@@ -224,6 +251,17 @@ export default function FamilyPage() {
           </div>
         </div>
       </main>
+      
+      {/* 删除家族确认modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        title="删除家族"
+        message="确定要删除这个家族吗？此操作不可恢复。"
+        confirmText="确认删除"
+        cancelText="取消"
+        onConfirm={handleConfirmDeleteFamily}
+        onCancel={handleCancelDeleteFamily}
+      />
     </div>
   );
 }

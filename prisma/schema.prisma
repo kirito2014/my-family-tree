@@ -57,6 +57,8 @@ model Family {
   users       FamilyUser[]
   treeMembers Member[]
   connections Connection[]
+  avatar      String?
+  location    String?
 }
 
 model FamilyUser {

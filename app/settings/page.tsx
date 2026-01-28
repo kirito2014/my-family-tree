@@ -17,6 +17,11 @@ const SettingsPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   
+  // 家族信息状态
+  const [families, setFamilies] = useState<any[]>([]);
+  const [familiesLoading, setFamiliesLoading] = useState<boolean>(false);
+  const [familiesError, setFamiliesError] = useState<string>('');
+  
   // 表单数据状态
   const [formData, setFormData] = useState({
     name: '',
@@ -43,6 +48,17 @@ const SettingsPage = () => {
   
   // 确认modal状态
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [familyToDelete, setFamilyToDelete] = useState<string | null>(null);
+  const [familyToEdit, setFamilyToEdit] = useState<any | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    description: '',
+    motto: '',
+    location: '',
+    avatar: ''
+  });
   
   // 加载用户信息
   useEffect(() => {
@@ -72,6 +88,34 @@ const SettingsPage = () => {
     
     loadUser();
   }, []);
+  
+  // 加载家族信息
+  useEffect(() => {
+    const loadFamilies = async () => {
+      if (activeTab === 'family') {
+        setFamiliesLoading(true);
+        setFamiliesError('');
+        try {
+          const response = await fetch('/api/families', { credentials: 'include' });
+          if (response.ok) {
+            const data = await response.json();
+            setFamilies(data.families || []);
+          } else {
+            setFamiliesError('获取家族信息失败');
+            setFamilies([]);
+          }
+        } catch (err) {
+          setFamiliesError('获取家族信息失败');
+          setFamilies([]);
+          console.error('获取家族信息失败:', err);
+        } finally {
+          setFamiliesLoading(false);
+        }
+      }
+    };
+    
+    loadFamilies();
+  }, [activeTab]);
 
   const handleLogout = () => {
     setShowConfirmModal(true);
@@ -85,6 +129,159 @@ const SettingsPage = () => {
 
   const handleCancelLogout = () => {
     setShowConfirmModal(false);
+  };
+
+  // 处理删除家族
+  const handleDeleteFamily = (familyId: string) => {
+    setFamilyToDelete(familyId);
+    setShowDeleteModal(true);
+  };
+
+  // 确认删除家族
+  const handleConfirmDeleteFamily = async () => {
+    if (familyToDelete) {
+      try {
+        const response = await fetch(`/api/families/${familyToDelete}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          // 重新加载家族列表
+          const loadFamilies = async () => {
+            setFamiliesLoading(true);
+            setFamiliesError('');
+            try {
+              const response = await fetch('/api/families', { credentials: 'include' });
+              if (response.ok) {
+                const data = await response.json();
+                setFamilies(data.families || []);
+              } else {
+                setFamiliesError('获取家族信息失败');
+                setFamilies([]);
+              }
+            } catch (err) {
+              setFamiliesError('获取家族信息失败');
+              setFamilies([]);
+              console.error('获取家族信息失败:', err);
+            } finally {
+              setFamiliesLoading(false);
+            }
+          };
+          
+          await loadFamilies();
+        } else {
+          setFamiliesError('删除家族失败');
+        }
+      } catch (err) {
+        setFamiliesError('删除家族失败');
+        console.error('删除家族失败:', err);
+      } finally {
+        setShowDeleteModal(false);
+        setFamilyToDelete(null);
+      }
+    }
+  };
+
+  // 取消删除家族
+  const handleCancelDeleteFamily = () => {
+    setShowDeleteModal(false);
+    setFamilyToDelete(null);
+  };
+
+  // 处理编辑家族
+  const handleEditFamily = (family: any) => {
+    setFamilyToEdit(family);
+    setEditFormData({
+      name: family.name || '',
+      description: family.description || '',
+      motto: family.motto || '',
+      location: family.location || '',
+      avatar: family.avatar || ''
+    });
+    setShowEditModal(true);
+  };
+
+  // 处理编辑表单输入变化
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // 处理编辑表单头像上传
+  const handleEditAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // 这里可以添加头像上传逻辑
+      // 暂时使用Base64模拟
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64Image = reader.result as string;
+        setEditFormData(prev => ({
+          ...prev,
+          avatar: base64Image
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // 保存编辑的家族信息
+  const handleSaveFamilyEdit = async () => {
+    if (familyToEdit) {
+      try {
+        const response = await fetch(`/api/families/${familyToEdit.id}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(editFormData)
+        });
+
+        if (response.ok) {
+          // 重新加载家族列表
+          const loadFamilies = async () => {
+            setFamiliesLoading(true);
+            setFamiliesError('');
+            try {
+              const response = await fetch('/api/families', { credentials: 'include' });
+              if (response.ok) {
+                const data = await response.json();
+                setFamilies(data.families || []);
+              } else {
+                setFamiliesError('获取家族信息失败');
+                setFamilies([]);
+              }
+            } catch (err) {
+              setFamiliesError('获取家族信息失败');
+              setFamilies([]);
+              console.error('获取家族信息失败:', err);
+            } finally {
+              setFamiliesLoading(false);
+            }
+          };
+          
+          await loadFamilies();
+          setShowEditModal(false);
+          setFamilyToEdit(null);
+        } else {
+          setFamiliesError('更新家族信息失败');
+        }
+      } catch (err) {
+        setFamiliesError('更新家族信息失败');
+        console.error('更新家族信息失败:', err);
+      }
+    }
+  };
+
+  // 取消编辑家族
+  const handleCancelEditFamily = () => {
+    setShowEditModal(false);
+    setFamilyToEdit(null);
   };
 
   const handleGoHome = async () => {
@@ -470,9 +667,141 @@ const SettingsPage = () => {
           )}
           
           {activeTab === 'family' && (
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">我的家族</h2>
-              <p>我的家族内容将在此显示</p>
+            <div className="space-y-8">
+              {/* 页面标题 */}
+              <div className="flex flex-col gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold leading-tight tracking-[-0.033em]">我的家族</h1>
+                <p className="text-sage-text text-sm font-normal leading-normal">管理您创建和加入的家族</p>
+              </div>
+
+              {/* 家族仪表盘 */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500">共 {families.length} 个家族</p>
+                      <h3 className="text-2xl font-bold text-gray-900 mt-1">{families.length}</h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 01-9.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500">我创建的家族</p>
+                      <h3 className="text-2xl font-bold text-gray-900 mt-1">{families.filter(f => f.creatorId === user?.id).length}</h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500">我加入的家族</p>
+                      <h3 className="text-2xl font-bold text-gray-900 mt-1">{families.filter(f => f.creatorId !== user?.id).length}</h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 01-9.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 家族列表 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
+                <div className="p-5 border-b border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-900">家族列表</h3>
+                </div>
+                
+                {familiesLoading ? (
+                  <div className="p-10 flex justify-center items-center">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600"></div>
+                  </div>
+                ) : familiesError ? (
+                  <div className="p-10 text-center text-red-600">
+                    {familiesError}
+                  </div>
+                ) : families.length === 0 ? (
+                  <div className="p-10 text-center">
+                    <p className="text-gray-500">您还没有创建或加入任何家族</p>
+                    <button 
+                      onClick={() => router.push('/onboard')}
+                      className="mt-4 h-10 px-6 rounded-2xl bg-white border border-green-500 text-green-600 hover:bg-green-50 transition-colors"
+                    >
+                      创建或加入家族
+                    </button>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-200">
+                    {families.map((family) => {
+                      const isCreator = family.creatorId === user?.id;
+                      const memberCount = family.treeMembers?.length || 0;
+                      
+                      return (
+                        <div key={family.id} className="p-5 flex items-center justify-between gap-4">
+                          {/* 头像 */}
+                          <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center overflow-hidden">
+                            {family.avatar ? (
+                              <img src={family.avatar} alt={`${family.name} Avatar`} className="w-full h-full object-cover rounded-full" />
+                            ) : (
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 01-9.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                              </svg>
+                            )}
+                          </div>
+                          
+                          {/* 家族信息 */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-4">
+                              <h4 className="text-base font-bold text-gray-900 truncate">{family.name}</h4>
+                              <span className="text-xs text-gray-500">{new Date(family.createdAt).toLocaleDateString()}</span>
+                            </div>
+                            <div className="flex items-center gap-4 mt-1">
+                              <span className="text-xs text-gray-500">{isCreator ? '我创建的' : '我加入的'}</span>
+                              <span className="text-xs text-gray-500">{memberCount} 成员</span>
+                            </div>
+                          </div>
+                          
+                          {/* 操作栏 */}
+                          <div className="flex items-center gap-2">
+                            <button 
+                              className="h-8 px-3 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-xs"
+                            >
+                              成员管理
+                            </button>
+                            <button 
+                              onClick={() => handleEditFamily(family)}
+                              className="h-8 px-3 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-xs"
+                            >
+                              编辑家族
+                            </button>
+                            {isCreator && (
+                              <button 
+                                onClick={() => handleDeleteFamily(family.id)}
+                                className="h-8 px-3 rounded-xl bg-white border border-red-300 text-red-600 hover:bg-red-50 transition-colors text-xs"
+                              >
+                                删除家族
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           )}
           
@@ -502,6 +831,126 @@ const SettingsPage = () => {
         onConfirm={handleConfirmLogout}
         onCancel={handleCancelLogout}
       />
+      
+      {/* 删除家族确认modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        title="删除家族"
+        message="确定要删除这个家族吗？此操作不可恢复。"
+        confirmText="确认删除"
+        cancelText="取消"
+        onConfirm={handleConfirmDeleteFamily}
+        onCancel={handleCancelDeleteFamily}
+      />
+      
+      {/* 编辑家族modal */}
+      {showEditModal && familyToEdit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div 
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            onClick={handleCancelEditFamily}
+          ></div>
+          <div className="relative bg-white rounded-3xl border-2 border-green-500 p-6 max-w-md w-full mx-4 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">编辑家族</h3>
+            <form className="space-y-4">
+              {/* 头像上传 */}
+              <div className="flex flex-col items-center gap-3">
+                <div className="relative group cursor-pointer">
+                  {editFormData.avatar ? (
+                    <div className="bg-green-100 rounded-full w-24 h-24 border-4 border-white shadow-lg flex items-center justify-center">
+                      <img src={editFormData.avatar} alt="家族头像" className="w-full h-full object-cover rounded-full" />
+                    </div>
+                  ) : (
+                    <div className="bg-green-100 rounded-full w-24 h-24 border-4 border-white shadow-lg flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 01-9.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </div>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleEditAvatarUpload} 
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                  />
+                </div>
+                <p className="text-sm text-gray-500">点击上传家族头像</p>
+              </div>
+              
+              {/* 家族名称 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">家族名称</label>
+                <input 
+                  name="name"
+                  value={editFormData.name}
+                  onChange={handleEditInputChange}
+                  className="w-full rounded-2xl border border-gray-300 bg-white text-gray-900 h-10 px-4 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all outline-none text-sm"
+                  type="text"
+                  placeholder="请输入家族名称"
+                />
+              </div>
+              
+              {/* 家族格言 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">家族格言</label>
+                <input 
+                  name="motto"
+                  value={editFormData.motto}
+                  onChange={handleEditInputChange}
+                  className="w-full rounded-2xl border border-gray-300 bg-white text-gray-900 h-10 px-4 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all outline-none text-sm"
+                  type="text"
+                  placeholder="请输入家族格言"
+                />
+              </div>
+              
+              {/* 家族所在地 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">家族所在地</label>
+                <input 
+                  name="location"
+                  value={editFormData.location}
+                  onChange={handleEditInputChange}
+                  className="w-full rounded-2xl border border-gray-300 bg-white text-gray-900 h-10 px-4 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all outline-none text-sm"
+                  type="text"
+                  placeholder="请输入家族所在地"
+                />
+              </div>
+              
+              {/* 家族描述 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">家族描述</label>
+                <textarea 
+                  name="description"
+                  value={editFormData.description}
+                  onChange={handleEditInputChange}
+                  className="w-full rounded-2xl border border-gray-300 bg-white text-gray-900 p-3 min-h-[100px] focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all outline-none resize-y text-sm"
+                  placeholder="请输入家族描述"
+                ></textarea>
+              </div>
+            </form>
+            
+            <div className="flex gap-3 justify-end mt-6">
+              <button
+                onClick={handleCancelEditFamily}
+                className="px-6 py-2.5 rounded-2xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleSaveFamilyEdit}
+                className="px-6 py-2.5 rounded-2xl bg-white text-green-600 font-medium hover:bg-green-50 transition-colors border border-green-600"
+              >
+                保存更改
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
