@@ -382,7 +382,7 @@ export default function FamilyPage() {
                           <div className="flex items-center gap-2 text-xs text-gray-500">
                             <span>{family.creatorId === currentUserId ? '创建于' : '加入于'} {new Date(family.createdAt).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
                             <span>•</span>
-                            <span>{family.treeMembers?.length || 0} 位成员</span>
+                            <span>{family.users?.length || 0} 位成员</span>
                           </div>
                         </div>
                       </div>

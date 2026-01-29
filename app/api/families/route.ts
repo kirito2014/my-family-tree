@@ -36,14 +36,47 @@ export async function GET(request: NextRequest) {
             name: true
           }
         },
-        treeMembers: true
+        treeMembers: true,
+        users: {
+          include: {
+            role: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc'
       }
     });
 
-    return NextResponse.json({ families });
+    // 为每个家族添加当前用户的角色和权限信息
+    const familiesWithUserInfo = await Promise.all(
+      families.map(async (family) => {
+        // 找到当前用户在这个家族中的信息
+        const familyUser = await prisma.familyUser.findFirst({
+          where: {
+            userId,
+            familyId: family.id
+          },
+          include: {
+            role: true,
+            permissions: true
+          }
+        });
+
+        return {
+          ...family,
+          role: familyUser?.role,
+          permissions: familyUser?.permissions || []
+        };
+      })
+    );
+
+    return NextResponse.json({ families: familiesWithUserInfo });
   } catch (error) {
     console.error('Error fetching families:', error);
     return NextResponse.json({ error: '获取家族信息失败' }, { status: 500 });

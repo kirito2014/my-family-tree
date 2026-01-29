@@ -6,7 +6,7 @@ import { verifySession } from '@/lib/session';
 const prisma = new PrismaClient();
 
 // 定义默认权限列表
-export const DEFAULT_PERMISSIONS = [
+const DEFAULT_PERMISSIONS = [
   { key: 'view_members', name: '查看家族成员', value: true },
   { key: 'manage_members', name: '管理家族成员', value: false },
   { key: 'edit_family_info', name: '编辑家族信息', value: false },
@@ -18,7 +18,7 @@ export const DEFAULT_PERMISSIONS = [
 ];
 
 // 定义角色默认权限
-export const ROLE_PERMISSIONS = {
+const ROLE_PERMISSIONS = {
   observer: DEFAULT_PERMISSIONS.map(p => ({
     ...p,
     value: ['view_members', 'join_family', 'leave_family', 'invite_member'].includes(p.key),

@@ -888,7 +888,7 @@ const SettingsPage = () => {
                   <div className="divide-y divide-gray-200">
                     {families.map((family) => {
                       const isCreator = family.creatorId === user?.id;
-                      const memberCount = family.treeMembers?.length || 0;
+                      const memberCount = family.users?.length || 0;
                       
                       return (
                         <div key={family.id} className="p-5 flex items-center justify-between gap-4">
@@ -925,18 +925,26 @@ const SettingsPage = () => {
                                 申请更高权限
                               </button>
                             )}
-                            <button 
-                              className="h-8 px-3 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-xs"
-                            >
-                              成员管理
-                            </button>
-                            <button 
-                              onClick={() => handleEditFamily(family)}
-                              className="h-8 px-3 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-xs"
-                            >
-                              编辑家族
-                            </button>
-                            {isCreator && (
+                            
+                            {/* 基于权限显示按钮，创建者默认拥有所有权限 */}
+                            {(isCreator || (family.permissions || []).some(p => p.key === 'manage_members' && p.value)) && (
+                              <button 
+                                className="h-8 px-3 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-xs"
+                              >
+                                成员管理
+                              </button>
+                            )}
+                            
+                            {(isCreator || (family.permissions || []).some(p => p.key === 'edit_family_info' && p.value)) && (
+                              <button 
+                                onClick={() => handleEditFamily(family)}
+                                className="h-8 px-3 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-xs"
+                              >
+                                编辑家族
+                              </button>
+                            )}
+                            
+                            {(isCreator || (family.permissions || []).some(p => p.key === 'delete_family' && p.value)) && (
                               <button 
                                 onClick={() => handleDeleteFamily(family.id)}
                                 className="h-8 px-3 rounded-xl bg-white border border-red-300 text-red-600 hover:bg-red-50 transition-colors text-xs"
