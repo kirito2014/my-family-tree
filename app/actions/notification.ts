@@ -128,3 +128,27 @@ export async function createNotification(data: {
 
   return { notification };
 }
+
+export async function markAllAsRead() {
+  try {
+    const session = await verifySession();
+    if (!session) {
+      return { error: '未授权' };
+    }
+
+    const result = await prisma.notification.updateMany({
+      where: {
+        recipientId: session.userId,
+        isRead: false
+      },
+      data: {
+        isRead: true
+      }
+    });
+
+    return { count: result.count };
+  } catch (error) {
+    console.error('标记所有通知为已读失败:', error);
+    return { error: '标记所有通知为已读失败' };
+  }
+}

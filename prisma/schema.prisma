@@ -34,6 +34,7 @@ model Role {
   description String?
   users       FamilyUser[]
   privileges  Privilege[]
+  permissions Permission[]
 }
 
 model Privilege {
@@ -42,6 +43,20 @@ model Privilege {
   description String?
   roleId      String
   role        Role     @relation(fields: [roleId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  key         String   @unique
+  value       Boolean  @default(true)
+  roleId      String?
+  role        Role?    @relation(fields: [roleId], references: [id])
+  familyUserId String?
+  familyUser  FamilyUser? @relation(fields: [familyUserId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -73,6 +88,7 @@ model FamilyUser {
   user      User     @relation(fields: [userId], references: [id])
   family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
   role      Role     @relation(fields: [roleId], references: [id])
+  permissions Permission[]
   @@unique([userId, familyId])
 }
 

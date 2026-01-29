@@ -19,6 +19,7 @@ interface NotificationModalProps {
   notifications: Notification[];
   loading: boolean;
   onMarkAsRead: (notificationId: string) => void;
+  onMarkAllAsRead?: () => void;
 }
 
 export default function NotificationModal({
@@ -26,7 +27,8 @@ export default function NotificationModal({
   onClose,
   notifications,
   loading,
-  onMarkAsRead
+  onMarkAsRead,
+  onMarkAllAsRead
 }: NotificationModalProps) {
   if (!isOpen) return null;
 
@@ -37,8 +39,17 @@ export default function NotificationModal({
         onClick={onClose}
       ></div>
       <div className="bg-white rounded-2xl shadow-lg z-50 w-full max-w-md max-h-[80vh] flex flex-col">
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
           <h3 className="text-lg font-bold text-gray-900">通知中心</h3>
+          {onMarkAllAsRead && notifications.length > 0 && (
+            <button
+              onClick={onMarkAllAsRead}
+              className="text-green-600 hover:text-green-700 transition-colors text-sm font-medium"
+              title="全部已读"
+            >
+              ✓ 一键已读
+            </button>
+          )}
         </div>
         <div className="flex-1 overflow-y-auto p-6">
           {loading ? (

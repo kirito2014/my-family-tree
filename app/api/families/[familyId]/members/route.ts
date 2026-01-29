@@ -34,29 +34,36 @@ export async function GET(request: NextRequest, { params }: { params: { familyId
       return NextResponse.json({ error: '您不是该家族的成员' }, { status: 403 });
     }
 
-    // 获取家族信息
-    const family = await prisma.family.findUnique({
+    // 获取家族成员列表
+    const members = await prisma.familyUser.findMany({
       where: {
-        id: familyId
+        familyId
       },
       include: {
-        creator: {
+        user: {
           select: {
             id: true,
             username: true,
-            name: true
+            name: true,
+            avatar: true
+          }
+        },
+        role: {
+          select: {
+            id: true,
+            name: true,
+            description: true
           }
         }
+      },
+      orderBy: {
+        joinedAt: 'asc'
       }
     });
 
-    if (!family) {
-      return NextResponse.json({ error: '家族不存在' }, { status: 404 });
-    }
-
-    return NextResponse.json({ family });
+    return NextResponse.json({ members });
   } catch (error) {
-    console.error('获取家族信息失败:', error);
-    return NextResponse.json({ error: '获取家族信息失败' }, { status: 500 });
+    console.error('获取家族成员失败:', error);
+    return NextResponse.json({ error: '获取家族成员失败' }, { status: 500 });
   }
 }

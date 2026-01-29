@@ -224,6 +224,32 @@ export default function FamilyPage() {
     }
   };
 
+  // 标记所有通知为已读
+  const handleMarkAllAsRead = async () => {
+    try {
+      const unreadNotifications = notifications.filter(n => !n.isRead);
+      if (unreadNotifications.length === 0) return;
+
+      // 并行标记所有未读通知为已读
+      await Promise.all(
+        unreadNotifications.map(async (notification) => {
+          const response = await fetch(`/api/notifications/${notification.id}`, {
+            method: 'PATCH',
+            credentials: 'include'
+          });
+          return response.ok;
+        })
+      );
+
+      // 更新本地状态
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      // 重置未读计数
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('标记全部通知为已读失败:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f7f8f6]">
@@ -293,9 +319,9 @@ export default function FamilyPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleCreateFamily}
-                className="bg-[#80ec13] hover:bg-[#72d411] text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-[#80ec13]/20 flex items-center gap-2 transition-all active:scale-95"
+                className="bg-white hover:bg-gray-50 text-[#80ec13] font-bold py-3 px-6 rounded-xl shadow-lg shadow-gray-200 flex items-center gap-2 transition-all active:scale-95 border border-[#80ec13]"
               >
-                <TreeDeciduous size={20} className="text-white" />
+                <TreeDeciduous size={20} className="text-[#80ec13]" />
                 创建家族
               </button>
               <button
@@ -458,6 +484,7 @@ export default function FamilyPage() {
         notifications={notifications}
         loading={notificationsLoading}
         onMarkAsRead={handleMarkAsRead}
+        onMarkAllAsRead={handleMarkAllAsRead}
       />
     </div>
   );

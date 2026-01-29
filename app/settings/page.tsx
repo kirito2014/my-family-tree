@@ -189,6 +189,28 @@ const SettingsPage = () => {
     }
   };
 
+  // 标记所有通知为已读
+  const handleMarkAllAsRead = async () => {
+    try {
+      const unreadNotifications = notifications.filter(n => !n.isRead);
+      if (unreadNotifications.length === 0) return;
+
+      // 并行标记所有未读通知为已读
+      await Promise.all(
+        unreadNotifications.map(async (notification) => {
+          await markNotificationAsRead(notification.id);
+        })
+      );
+
+      // 更新本地状态
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      // 重置未读计数
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('标记全部通知为已读失败:', error);
+    }
+  };
+
   // 申请权限提升
   const handleRequestPermission = async (family: any) => {
     try {
@@ -989,6 +1011,34 @@ const SettingsPage = () => {
                       <div className="w-4 h-4 rounded border border-gray-300 bg-gray-100"></div>
                       <span className="text-sm text-gray-500">删除家族</span>
                     </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">加入家族</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">退出家族</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 bg-gray-100"></div>
+                      <span className="text-sm text-gray-500">踢出成员</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">邀请成员</span>
+                    </div>
                   </div>
                 </div>
 
@@ -1031,6 +1081,34 @@ const SettingsPage = () => {
                     <div className="flex items-center gap-3">
                       <div className="w-4 h-4 rounded border border-gray-300 bg-gray-100"></div>
                       <span className="text-sm text-gray-500">删除家族</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">加入家族</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">退出家族</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 bg-gray-100"></div>
+                      <span className="text-sm text-gray-500">踢出成员</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">邀请成员</span>
                     </div>
                   </div>
                 </div>
@@ -1079,6 +1157,38 @@ const SettingsPage = () => {
                       </div>
                       <span className="text-sm text-gray-700">删除家族</span>
                     </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-purple-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">加入家族</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-purple-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">退出家族</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-purple-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">踢出成员</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center bg-purple-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-700">邀请成员</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1089,15 +1199,15 @@ const SettingsPage = () => {
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 mt-0.5">•</span>
-                    <span>观察者：适合只想了解家族历史的成员，只能查看信息</span>
+                    <span>观察者：适合只想了解家族历史的成员，只能查看信息，可加入和退出家族，可邀请成员</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 mt-0.5">•</span>
-                    <span>参与者：适合积极参与家族管理的成员，可以管理成员和编辑信息</span>
+                    <span>参与者：适合积极参与家族管理的成员，可以管理成员和编辑信息，可加入和退出家族，可邀请成员</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 mt-0.5">•</span>
-                    <span>创造者：家族的创建者，拥有最高权限，包括删除家族的权利</span>
+                    <span>创造者：家族的创建者，拥有最高权限，包括删除家族和踢出成员的权利，可加入和退出家族，可邀请成员</span>
                   </li>
                 </ul>
               </div>
@@ -1244,6 +1354,7 @@ const SettingsPage = () => {
         notifications={notifications}
         loading={notificationsLoading}
         onMarkAsRead={handleMarkAsRead}
+        onMarkAllAsRead={handleMarkAllAsRead}
       />
     </div>
   );

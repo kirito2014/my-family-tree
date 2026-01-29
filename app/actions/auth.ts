@@ -2,6 +2,7 @@
 
 import { Prisma, PrismaClient } from '@prisma/client';
 import { createNotification } from './notification';
+import { createDefaultPermissionsForFamilyUser } from './permission';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -145,13 +146,16 @@ const generateShareCode = function (): string {
       roleId = defaultRole.id;
     }
 
-    await prisma.familyUser.create({
+    const familyUser = await prisma.familyUser.create({
       data: {
         userId: session.userId,
         familyId: family.id,
         roleId: roleId
       }
     });
+
+    // 为创建者分配默认权限
+    await createDefaultPermissionsForFamilyUser(familyUser.id, 'creator');
 
     return { success: true, family };
   } catch (error) {
@@ -214,13 +218,16 @@ export async function joinFamily(inviteCode: string) {
     }
 
     // 创建家庭成员关系
-    await prisma.familyUser.create({
+    const familyUser = await prisma.familyUser.create({
       data: {
         userId: session.userId,
         familyId: family.id,
         roleId: roleId
       }
     });
+
+    // 为新成员分配默认权限
+    await createDefaultPermissionsForFamilyUser(familyUser.id, 'observer');
 
     // 发送通知给家族创建者
     try {
