@@ -929,6 +929,7 @@ const SettingsPage = () => {
                             {/* 基于权限显示按钮，创建者默认拥有所有权限 */}
                             {(isCreator || (family.permissions || []).some((p: { key: string; value: boolean }) => p.key === 'manage_members' && p.value)) && (
                               <button 
+                                onClick={() => router.push(`/family/${family.id}/members/cards`)}
                                 className="h-8 px-3 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-xs"
                               >
                                 成员管理
