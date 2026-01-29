@@ -106,23 +106,25 @@ export async function createNotification(data: {
   content: string;
   type: string;
   familyId?: string;
+  senderId?: string;
 }) {
-  try {
+  let senderId = data.senderId;
+  
+  // 如果没有提供senderId，则尝试从会话中获取
+  if (!senderId) {
     const session = await verifySession();
     if (!session) {
-      return { error: '未授权' };
+      throw new Error('未授权');
     }
-
-    const notification = await prisma.notification.create({
-      data: {
-        ...data,
-        senderId: session.userId
-      }
-    });
-
-    return { notification };
-  } catch (error) {
-    console.error('创建通知失败:', error);
-    return { error: '创建通知失败' };
+    senderId = session.userId;
   }
+
+  const notification = await prisma.notification.create({
+    data: {
+      ...data,
+      senderId
+    }
+  });
+
+  return { notification };
 }

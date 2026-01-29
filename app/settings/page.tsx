@@ -6,6 +6,7 @@ import { PrismaClient } from '@prisma/client';
 import { getCurrentUser, updateUserProfile, uploadAvatar, logout } from '@/app/actions/auth';
 import { getNotifications, getUnreadNotificationCount, markNotificationAsRead, createNotification } from '@/app/actions/notification';
 import ConfirmModal from '@/components/ConfirmModal';
+import NotificationModal from '@/components/NotificationModal';
 
 const prisma = new PrismaClient();
 
@@ -127,30 +128,28 @@ const SettingsPage = () => {
   // 加载家族信息
   useEffect(() => {
     const loadFamilies = async () => {
-      if (activeTab === 'family') {
-        setFamiliesLoading(true);
-        setFamiliesError('');
-        try {
-          const response = await fetch('/api/families', { credentials: 'include' });
-          if (response.ok) {
-            const data = await response.json();
-            setFamilies(data.families || []);
-          } else {
-            setFamiliesError('获取家族信息失败');
-            setFamilies([]);
-          }
-        } catch (err) {
+      setFamiliesLoading(true);
+      setFamiliesError('');
+      try {
+        const response = await fetch('/api/families', { credentials: 'include' });
+        if (response.ok) {
+          const data = await response.json();
+          setFamilies(data.families || []);
+        } else {
           setFamiliesError('获取家族信息失败');
           setFamilies([]);
-          console.error('获取家族信息失败:', err);
-        } finally {
-          setFamiliesLoading(false);
         }
+      } catch (err) {
+        setFamiliesError('获取家族信息失败');
+        setFamilies([]);
+        console.error('获取家族信息失败:', err);
+      } finally {
+        setFamiliesLoading(false);
       }
     };
     
     loadFamilies();
-  }, [activeTab]);
+  }, []);
 
   // 加载通知
   const loadNotifications = async () => {
@@ -1239,66 +1238,13 @@ const SettingsPage = () => {
       )}
 
       {/* 通知模态框 */}
-      {showNotificationModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div 
-            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
-            onClick={() => setShowNotificationModal(false)}
-          ></div>
-          <div className="bg-white rounded-2xl shadow-lg z-50 w-full max-w-md max-h-[80vh] flex flex-col">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-bold text-gray-900">通知中心</h3>
-            </div>
-            <div className="flex-1 overflow-y-auto p-6">
-              {notificationsLoading ? (
-                <div className="flex justify-center items-center h-40">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-                </div>
-              ) : notifications.length === 0 ? (
-                <div className="text-center py-10">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                  <p className="text-gray-500">暂时没有通知</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {notifications.map((notification) => (
-                    <div 
-                      key={notification.id}
-                      className={`p-4 rounded-xl border ${notification.isRead ? 'border-gray-200 bg-white' : 'border-green-200 bg-green-50'}`}
-                      onClick={() => !notification.isRead && handleMarkAsRead(notification.id)}
-                    >
-                      <div className="flex justify-between items-start">
-                        <h4 className="font-medium text-gray-900">{notification.title}</h4>
-                        <span className="text-xs text-gray-500">
-                          {new Date(notification.createdAt).toLocaleString()}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">{notification.content}</p>
-                      {notification.family && (
-                        <div className="mt-2 flex items-center gap-2">
-                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                            家族: {notification.family.name}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="p-6 border-t border-gray-200">
-              <button 
-                onClick={() => setShowNotificationModal(false)}
-                className="w-full h-10 px-6 rounded-2xl bg-white border border-gray-300 text-gray-700 font-medium shadow-sm hover:bg-gray-50 transition-colors"
-              >
-                关闭
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <NotificationModal
+        isOpen={showNotificationModal}
+        onClose={() => setShowNotificationModal(false)}
+        notifications={notifications}
+        loading={notificationsLoading}
+        onMarkAsRead={handleMarkAsRead}
+      />
     </div>
   );
 };

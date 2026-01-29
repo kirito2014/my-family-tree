@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PrismaClient } from '@prisma/client';
-import { TreeDeciduous, Users, Copy, ExternalLink, Trash2, ChevronRight, Bell } from 'lucide-react';
+import { TreeDeciduous, Users, Copy, ExternalLink, Trash2, ChevronRight, Bell, LogOut } from 'lucide-react';
 import ConfirmModal from '@/components/ConfirmModal';
+import NotificationModal from '@/components/NotificationModal';
 import { getUnreadNotificationCount, createNotification } from '@/app/actions/notification';
 
 const prisma = new PrismaClient();
@@ -16,13 +17,37 @@ export default function FamilyPage() {
   const [copied, setCopied] = useState<string>('');
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [familyToDelete, setFamilyToDelete] = useState<string | null>(null);
+  const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
+  const [familyToLeave, setFamilyToLeave] = useState<string | null>(null);
   const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [showNotificationModal, setShowNotificationModal] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notificationsLoading, setNotificationsLoading] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
     fetchFamilies();
     loadUnreadCount();
+    getCurrentUserId();
   }, []);
+
+  const getCurrentUserId = async () => {
+    try {
+      const response = await fetch('/api/auth/me', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.user) {
+          setCurrentUserId(data.user.id);
+        }
+      }
+    } catch (error) {
+      console.error('获取当前用户ID失败:', error);
+    }
+  };
 
   const loadUnreadCount = async () => {
     try {
@@ -100,6 +125,39 @@ export default function FamilyPage() {
     setFamilyToDelete(null);
   };
 
+  const handleLeaveFamily = (familyId: string) => {
+    setFamilyToLeave(familyId);
+    setShowLeaveModal(true);
+  };
+
+  const handleConfirmLeaveFamily = async () => {
+    if (familyToLeave) {
+      try {
+        const response = await fetch(`/api/families/${familyToLeave}/leave`, {
+          method: 'POST',
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('退出家族失败');
+        }
+
+        fetchFamilies();
+      } catch (err) {
+        setError('退出家族失败，请重试');
+        console.error('Error leaving family:', err);
+      } finally {
+        setShowLeaveModal(false);
+        setFamilyToLeave(null);
+      }
+    }
+  };
+
+  const handleCancelLeaveFamily = () => {
+    setShowLeaveModal(false);
+    setFamilyToLeave(null);
+  };
+
   const handleCreateFamily = () => {
     router.push('/family/create');
   };
@@ -123,7 +181,47 @@ export default function FamilyPage() {
 
   // 打开通知中心
   const handleOpenNotifications = () => {
-    router.push('/settings');
+    loadNotifications();
+    setShowNotificationModal(true);
+  };
+
+  // 加载通知
+  const loadNotifications = async () => {
+    setNotificationsLoading(true);
+    try {
+      const response = await fetch('/api/notifications', { credentials: 'include' });
+      if (response.ok) {
+        const data = await response.json();
+        setNotifications(data.notifications || []);
+        // 更新未读计数
+        const unread = data.notifications?.filter((n: any) => !n.isRead).length || 0;
+        setUnreadCount(unread);
+      }
+    } catch (error) {
+      console.error('加载通知失败:', error);
+    } finally {
+      setNotificationsLoading(false);
+    }
+  };
+
+  // 标记通知为已读
+  const handleMarkAsRead = async (notificationId: string) => {
+    try {
+      const response = await fetch(`/api/notifications/${notificationId}`, {
+        method: 'PATCH',
+        credentials: 'include'
+      });
+      if (response.ok) {
+        // 更新本地状态
+        setNotifications(prev => prev.map(n => 
+          n.id === notificationId ? { ...n, isRead: true } : n
+        ));
+        // 更新未读计数
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error('标记通知为已读失败:', error);
+    }
   };
 
   if (loading) {
@@ -195,9 +293,9 @@ export default function FamilyPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleCreateFamily}
-                className="bg-[#80ec13] hover:bg-[#72d411] text-[#192210] font-bold py-3 px-6 rounded-xl shadow-lg shadow-[#80ec13]/20 flex items-center gap-2 transition-all active:scale-95"
+                className="bg-[#80ec13] hover:bg-[#72d411] text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-[#80ec13]/20 flex items-center gap-2 transition-all active:scale-95"
               >
-                <TreeDeciduous size={20} />
+                <TreeDeciduous size={20} className="text-white" />
                 创建家族
               </button>
               <button
@@ -256,7 +354,7 @@ export default function FamilyPage() {
                             <p className="text-[#5c6f4b] text-sm mb-1">{family.motto}</p>
                           )}
                           <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <span>创建于 {new Date(family.createdAt).toLocaleDateString()}</span>
+                            <span>{family.creatorId === currentUserId ? '创建于' : '加入于'} {new Date(family.createdAt).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
                             <span>•</span>
                             <span>{family.treeMembers?.length || 0} 位成员</span>
                           </div>
@@ -277,13 +375,23 @@ export default function FamilyPage() {
                         >
                           <ExternalLink size={16} className="text-[#5c6f4b] hover:text-[#80ec13]" />
                         </button>
-                        <button
-                          onClick={() => handleDeleteFamily(family.id)}
-                          className="p-2 rounded-full hover:bg-red-50 transition-colors"
-                          title="删除家族"
-                        >
-                          <Trash2 size={16} className="text-[#5c6f4b] hover:text-red-500" />
-                        </button>
+                        {family.creatorId === currentUserId ? (
+                          <button
+                            onClick={() => handleDeleteFamily(family.id)}
+                            className="p-2 rounded-full hover:bg-red-50 transition-colors"
+                            title="删除家族"
+                          >
+                            <Trash2 size={16} className="text-[#5c6f4b] hover:text-red-500" />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleLeaveFamily(family.id)}
+                            className="p-2 rounded-full hover:bg-red-50 transition-colors"
+                            title="退出家族"
+                          >
+                            <LogOut size={16} className="text-[#5c6f4b] hover:text-red-500" />
+                          </button>
+                        )}
                       </div>
                     </div>
                     
@@ -330,6 +438,26 @@ export default function FamilyPage() {
         cancelText="取消"
         onConfirm={handleConfirmDeleteFamily}
         onCancel={handleCancelDeleteFamily}
+      />
+      
+      {/* 退出家族确认modal */}
+      <ConfirmModal
+        isOpen={showLeaveModal}
+        title="退出家族"
+        message="确定要退出这个家族吗？"
+        confirmText="确认退出"
+        cancelText="取消"
+        onConfirm={handleConfirmLeaveFamily}
+        onCancel={handleCancelLeaveFamily}
+      />
+      
+      {/* 通知模态框 */}
+      <NotificationModal
+        isOpen={showNotificationModal}
+        onClose={() => setShowNotificationModal(false)}
+        notifications={notifications}
+        loading={notificationsLoading}
+        onMarkAsRead={handleMarkAsRead}
       />
     </div>
   );

@@ -44,7 +44,7 @@ export async function createSession(userId: string, username: string) {
     .setExpirationTime(Date.now() + SESSION_EXPIRY)
     .sign(new TextEncoder().encode(SECRET_KEY));
 
-  cookies().set('session', token, {
+  cookies().set('auth-token', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -86,6 +86,6 @@ export async function getCurrentUser() {
 }
 
 export async function destroySession() {
-  cookies().delete('session');
+  cookies().delete('auth-token');
   return { success: true };
 }
