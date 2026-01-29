@@ -927,7 +927,7 @@ const SettingsPage = () => {
                             )}
                             
                             {/* 基于权限显示按钮，创建者默认拥有所有权限 */}
-                            {(isCreator || (family.permissions || []).some(p => p.key === 'manage_members' && p.value)) && (
+                            {(isCreator || (family.permissions || []).some((p: { key: string; value: boolean }) => p.key === 'manage_members' && p.value)) && (
                               <button 
                                 className="h-8 px-3 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-xs"
                               >
@@ -935,7 +935,7 @@ const SettingsPage = () => {
                               </button>
                             )}
                             
-                            {(isCreator || (family.permissions || []).some(p => p.key === 'edit_family_info' && p.value)) && (
+                            {(isCreator || (family.permissions || []).some((p: { key: string; value: boolean }) => p.key === 'edit_family_info' && p.value)) && (
                               <button 
                                 onClick={() => handleEditFamily(family)}
                                 className="h-8 px-3 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-xs"
@@ -944,7 +944,7 @@ const SettingsPage = () => {
                               </button>
                             )}
                             
-                            {(isCreator || (family.permissions || []).some(p => p.key === 'delete_family' && p.value)) && (
+                            {(isCreator || (family.permissions || []).some((p: { key: string; value: boolean }) => p.key === 'delete_family' && p.value)) && (
                               <button 
                                 onClick={() => handleDeleteFamily(family.id)}
                                 className="h-8 px-3 rounded-xl bg-white border border-red-300 text-red-600 hover:bg-red-50 transition-colors text-xs"
